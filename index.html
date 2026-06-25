@@ -188,6 +188,10 @@
 </head>
 <body>
 
+    <audio id="birthdayTrack" loop preload="auto">
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="sky-art"></div>
     <svg class="constellation-overlay" id="starMap"></svg>
     <div class="grass-hill"></div>
@@ -215,25 +219,14 @@
     </div>
 
     <script>
-        // Initialize global audio element securely with native relative folder paths
-        const music = new Audio('./song.mp3');
-        music.loop = true;
-
-        // 1. PERFECTLY ALIGNED CONSTELLATION MAP
+        // 1. CONSTELLATION GENERATOR
         const starMap = document.getElementById('starMap');
-        
         const letterGroups = [
-            // Z
             [[30,40], [42,40], [55,40], [30,100], [42,100], [55,100], [48,60], [38,80]],
-            // A
             [[75,100], [82,70], [90,40], [98,70], [105,100], [83,75], [97,75]],
-            // I
             [[125,40], [137,40], [150,40], [137,60], [137,80], [125,100], [137,100], [150,100]],
-            // N
             [[170,100], [170,70], [170,40], [182,60], [194,80], [205,100], [205,70], [205,40]],
-            // A
             [[225,100], [232,70], [240,40], [248,70], [255,100], [233,75], [247,75]],
-            // B
             [[275,40], [275,70], [275,100], [290,40], [300,55], [290,70], [302,85], [290,100]]
         ];
 
@@ -241,7 +234,6 @@
             starMap.innerHTML = '';
             const totalWidth = window.innerWidth;
             const totalHeight = window.innerHeight;
-            
             starMap.setAttribute("viewBox", `0 0 ${totalWidth} ${totalHeight}`);
             
             const wordWidth = 330; 
@@ -270,7 +262,6 @@
                 starMap.appendChild(circle);
             }
         }
-        
         drawSkyElements();
         window.addEventListener('resize', drawSkyElements);
 
@@ -285,16 +276,13 @@
 
         function drawBotanicalScene() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
             const centerX = canvas.width / 2;
             const startY = canvas.height; 
-            
             const maxCenterLen = 175;
             const currentCenterLen = maxCenterLen * botanicalProgress;
 
             ctx.shadowColor = 'rgba(2, 12, 6, 0.5)';
             ctx.shadowBlur = 8;
-            
             drawVine(centerX, startY, centerX, startY - currentCenterLen, '#22c55e', 5.5, -10);
             
             if (botanicalProgress > 0.2) {
@@ -302,7 +290,6 @@
                 drawVine(centerX, startY - 35, centerX - (130 * p), startY - 35 - (115 * p), '#166534', 4, -30);
                 drawVine(centerX, startY - 50, centerX + (135 * p), startY - 50 - (105 * p), '#166534', 4, 30);
             }
-            
             if (botanicalProgress > 0.45) {
                 const pSmall = (botanicalProgress - 0.45) / 0.55;
                 drawVine(centerX, startY - 15, centerX - (80 * pSmall), startY - 15 - (60 * pSmall), '#14532d', 2.8, -15);
@@ -317,10 +304,8 @@
             }
 
             drawGardenLeaves(centerX, startY, maxCenterLen);
-
             const mainRadius = 38;
             const centerFlowerY = startY - maxCenterLen;
-            
             drawFlower(centerX, centerFlowerY, mainRadius * bloomProgress, '#ef4444', '#b91c1c');
 
             if (bloomProgress > 0.35) {
@@ -328,7 +313,6 @@
                 drawFlower(centerX - 130, startY - 150, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
                 drawFlower(centerX + 135, startY - 155, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
             }
-
             if (bloomProgress > 0.55) {
                 const bloomSmall = (bloomProgress - 0.55) / 0.45;
                 drawFlower(centerX - 80, startY - 75, (mainRadius * 0.52) * bloomSmall, '#f43f5e', '#be123c');
@@ -369,7 +353,6 @@
             ctx.fillStyle = '#15803d';
             ctx.strokeStyle = '#22c55e';
             ctx.lineWidth = 1;
-
             for (let i = 1; i < 14; i++) {
                 const ratio = i / 14;
                 const leafY = startY - (totalLen * ratio);
@@ -377,8 +360,6 @@
                 const leafX = centerX + (isRight ? 5 : -5);
                 drawOrganicLeaf(leafX, leafY, 15, isRight ? 35 : -35);
             }
-            drawOrganicLeaf(centerX - 65, startY - 100, 12, -30);
-            drawOrganicLeaf(centerX + 70, startY - 110, 12, 30);
         }
 
         function drawOrganicLeaf(x, y, radius, angle) {
@@ -417,14 +398,12 @@
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2);
             ctx.fillStyle = '#facc15';
-            ctx.shadowColor = '#eab308';
-            ctx.shadowBlur = 6;
             ctx.fill();
-            ctx.shadowBlur = 0;
         }
 
-        // 3. SECURE INTERACTION PLAYER
+        // 3. DOM BOUND PLAYBACK ENGINE
         function toggleMusic() {
+            const track = document.getElementById('birthdayTrack');
             const btn = document.querySelector('.music-btn');
             
             if (!animationStarted) {
@@ -432,15 +411,15 @@
                 drawBotanicalScene();
             }
 
-            if (music.paused) {
-                music.play().then(() => {
+            if (track.paused) {
+                track.play().then(() => {
                     btn.innerHTML = "⏸️ Pause";
-                }).catch(error => {
-                    console.log("Audio play failed: ", error);
-                    btn.innerHTML = "⚠️ Tap Again to Play";
+                }).catch(err => {
+                    console.log("DOM standard stream error fallback hook triggered: ", err);
+                    btn.innerHTML = "▶️ Tap to Retry";
                 });
             } else {
-                music.pause();
+                track.pause();
                 btn.innerHTML = "▶️ Play";
             }
         }
