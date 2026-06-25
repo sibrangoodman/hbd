@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Ms. Cool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #0b0b0f;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: #ffffff;
+        }
+
+        /* Ambient glow in the background */
+        .bg-glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(0,0,0,0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeIn 2s ease-in forwards 0.5s;
+        }
+
+        .highlight {
+            color: #c084fc;
+            font-weight: 600;
+            text-shadow: 0 0 20px rgba(192, 132, 252, 0.4);
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #9ca3af;
+            letter-spacing: 1px;
+            opacity: 0;
+            animation: fadeIn 2s ease-in forwards 1.8s;
+            margin-bottom: 10px;
+        }
+
+        /* Canvas styling for the flower */
+        canvas {
+            background: transparent;
+            display: block;
+        }
+
+        /* Ambient, clean button */
+        .music-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 12px 28px;
+            color: #fff;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-top: 15px;
+            outline: none;
+            backdrop-filter: blur(5px);
+        }
+
+        .music-btn:hover {
+            background: #ffffff;
+            color: #0b0b0f;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="container">
+        <h1>Happy Birthday <span class="highlight">Ms. Cool</span> 😉❤️</h1>
+        <p>A little digital bloom for you...</p>
+
+        <canvas id="flowerCanvas" width="400" height="350"></canvas>
+
+        <audio id="bg-music" loop>
+            <source src="song.mp3" type="audio/mpeg">
+        </audio>
+
+        <button class="music-btn" onclick="toggleMusic()">🎵 Tap for the vibe</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('flowerCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Animation state variables
+        let stemHeight = 0;
+        const maxStemHeight = 160;
+        let bloomProgress = 0;
+        let centerProgress = 0;
+
+        function drawFlowerAnimation() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const startX = canvas.width / 2;
+            const startY = canvas.height;
+            const flowerY = startY - stemHeight;
+
+            // 1. Draw and Grow Stem
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.quadraticCurveTo(startX - 10, startY - (stemHeight / 2), startX, flowerY);
+            ctx.strokeStyle = '#22c55e';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.shadowColor = '#14532d';
+            ctx.shadowBlur = 5;
+            ctx.stroke();
+            ctx.shadowBlur = 0; // reset shadow
+
+            if (stemHeight < maxStemHeight) {
+                stemHeight += 2; // Speed of stem growth
+                requestAnimationFrame(drawFlowerAnimation);
+                return;
+            }
+
+            // 2. Bloom Petals (Triggers after stem finishes growing)
+            const petalCount = 6;
+            const maxPetalRadius = 45;
+            const currentRadius = maxPetalRadius * bloomProgress;
+
+            ctx.save();
+            ctx.translate(startX, flowerY);
+            
+            for (let i = 0; i < petalCount; i++) {
+                ctx.rotate((Math.PI * 2) / petalCount);
+                
+                // Create glowing pink gradient for petals
+                let gradient = ctx.createRadialGradient(0, 0, 5, 0, -currentRadius, currentRadius);
+                gradient.addColorStop(0, '#f43f5e');
+                gradient.addColorStop(1, '#ec4899');
+
+                ctx.beginPath();
+                // Draw elegant, smooth organic loops for petals
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-currentRadius/2, -currentRadius/2, -currentRadius/2, -currentRadius, 0, -currentRadius);
+                ctx.bezierCurveTo(currentRadius/2, -currentRadius, currentRadius/2, -currentRadius/2, 0, 0);
+                
+                ctx.fillStyle = gradient;
+                ctx.shadowColor = 'rgba(236, 72, 153, 0.3)';
+                ctx.shadowBlur = 15;
+                ctx.fill();
+            }
+            ctx.restore();
+            ctx.shadowBlur = 0;
+
+            if (bloomProgress < 1) {
+                bloomProgress += 0.012; // Speed of petal bloom
+                requestAnimationFrame(drawFlowerAnimation);
+                return;
+            }
+
+            // 3. Reveal Golden Center (Triggers after petals bloom)
+            const maxCenterRadius = 14;
+            const currentCenterRadius = maxCenterRadius * centerProgress;
+
+            ctx.beginPath();
+            ctx.arc(startX, flowerY, currentCenterRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#facc15';
+            ctx.shadowColor = '#eab308';
+            ctx.shadowBlur = 10;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            if (centerProgress < 1) {
+                centerProgress += 0.03; // Speed of center reveal
+                requestAnimationFrame(drawFlowerAnimation);
+            }
+        }
+
+        // Handle Audio and start the drawing flow on user tap
+        let interactionStarted = false;
+        function toggleMusic() {
+            const music = document.getElementById('bg-music');
+            const btn = document.querySelector('.music-btn');
+            
+            if (!interactionStarted) {
+                interactionStarted = true;
+                // Starts the canvas animation loop on the very first click
+                drawFlowerAnimation();
+            }
+
+            if (music.paused) {
+                music.play().catch(err => console.log("Audio play blocked: requires interaction"));
+                btn.innerHTML = "⏸️ Pause the vibe";
+            } else {
+                music.pause();
+                btn.innerHTML = "🎵 Tap for the vibe";
+            }
+        }
+    </script>
+</body>
+</html>
