@@ -36,7 +36,6 @@
             pointer-events: none;
         }
 
-        /* Full screen space overlay for stars everywhere */
         .constellation-overlay {
             position: absolute;
             top: 0;
@@ -215,21 +214,22 @@
         </div>
     </div>
 
-    <audio id="bg-music" loop preload="auto" src="song.mp3"></audio>
-
     <script>
+        // Initialize global audio element securely with native relative folder paths
+        const music = new Audio('./song.mp3');
+        music.loop = true;
+
         // 1. PERFECTLY ALIGNED CONSTELLATION MAP
         const starMap = document.getElementById('starMap');
         
-        // Crisp letter coordinate groups designed for an absolute display window
         const letterGroups = [
             // Z
             [[30,40], [42,40], [55,40], [30,100], [42,100], [55,100], [48,60], [38,80]],
             // A
             [[75,100], [82,70], [90,40], [98,70], [105,100], [83,75], [97,75]],
-            // I (Clean distinct top/bottom bars with a solid middle pillar)
+            // I
             [[125,40], [137,40], [150,40], [137,60], [137,80], [125,100], [137,100], [150,100]],
-            // N (Sharp angled tracking lines)
+            // N
             [[170,100], [170,70], [170,40], [182,60], [194,80], [205,100], [205,70], [205,40]],
             // A
             [[225,100], [232,70], [240,40], [248,70], [255,100], [233,75], [247,75]],
@@ -242,33 +242,29 @@
             const totalWidth = window.innerWidth;
             const totalHeight = window.innerHeight;
             
-            // Set SVG view parameters dynamically based on actual screen size
             starMap.setAttribute("viewBox", `0 0 ${totalWidth} ${totalHeight}`);
             
-            // Center calculation for the word constellation block in the upper middle area
             const wordWidth = 330; 
             const startX = (totalWidth - wordWidth) / 2;
-            const startY = totalHeight * 0.18; // Perfectly positioned in the sky midline
+            const startY = totalHeight * 0.18; 
 
-            // Render letters smoothly
             letterGroups.forEach(letter => {
                 letter.forEach(pt => {
                     const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                     circle.setAttribute("cx", startX + pt[0]);
                     circle.setAttribute("cy", startY + (pt[1] - 40));
-                    circle.setAttribute("r", Math.random() * 0.8 + 2.0); // Made letter stars slightly chunkier to stand out
+                    circle.setAttribute("r", Math.random() * 0.8 + 2.0); 
                     circle.setAttribute("fill", "#ffffff");
                     circle.setAttribute("style", `opacity: 0.95; filter: drop-shadow(0 0 5px rgba(255,255,255,0.95));`);
                     starMap.appendChild(circle);
                 });
             });
 
-            // SCATTERED LITTLE STARS EVERYWHERE ACROSS THE WHOLE SKY SCREEN
             const totalBackgroundStars = Math.floor(totalWidth / 12); 
             for(let i = 0; i < totalBackgroundStars; i++) {
                 const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                 circle.setAttribute("cx", Math.random() * totalWidth);
-                circle.setAttribute("cy", Math.random() * (totalHeight * 0.75)); // Fills sky all the way down to the grass line
+                circle.setAttribute("cy", Math.random() * (totalHeight * 0.75)); 
                 circle.setAttribute("r", Math.random() * 0.9 + 0.4);
                 circle.setAttribute("fill", "rgba(255,255,255,0.45)");
                 starMap.appendChild(circle);
@@ -429,7 +425,6 @@
 
         // 3. SECURE INTERACTION PLAYER
         function toggleMusic() {
-            const music = document.getElementById('bg-music');
             const btn = document.querySelector('.music-btn');
             
             if (!animationStarted) {
@@ -441,8 +436,8 @@
                 music.play().then(() => {
                     btn.innerHTML = "⏸️ Pause";
                 }).catch(error => {
-                    console.log("Audio load error context details: ", error);
-                    btn.innerHTML = "⚠️ Check file name on GitHub";
+                    console.log("Audio play failed: ", error);
+                    btn.innerHTML = "⚠️ Tap Again to Play";
                 });
             } else {
                 music.pause();
