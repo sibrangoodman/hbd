@@ -11,8 +11,7 @@
             box-sizing: border-box;
         }
         body {
-            /* Painterly night sky background gradient */
-            background: linear-gradient(to bottom, #090a14 0%, #0f1123 40%, #1a1528 70%, #1b2624 100%);
+            background: linear-gradient(to bottom, #070814 0%, #0b0d1a 40%, #131124 70%, #141d1c 100%);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
             display: flex;
@@ -26,7 +25,7 @@
             position: relative;
         }
 
-        /* Abstract painted cloud layers and artistic sky texture */
+        /* Ambient painted sky textures */
         .sky-art {
             position: absolute;
             top: 0;
@@ -34,37 +33,35 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 30% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 40%, rgba(236, 72, 153, 0.1) 0%, transparent 40%);
+                radial-gradient(circle at 30% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 80% 40%, rgba(236, 72, 153, 0.08) 0%, transparent 40%);
             z-index: 1;
             pointer-events: none;
         }
 
-        /* Soft glowing star impressionism */
-        .sky-art::before {
-            content: '';
+        /* Constellation container */
+        .constellation-overlay {
             position: absolute;
+            top: 12%;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
-            height: 70%;
-            background-image: 
-                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
-                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px);
-            background-size: 130px 130px, 200px 200px;
-            background-position: 0 0, 40px 60px;
-            opacity: 0.25;
+            max-width: 600px;
+            height: 120px;
+            z-index: 2;
+            pointer-events: none;
         }
 
-        /* Rolling painted green grass hill at the bottom */
+        /* Smooth rolling hills with layered blending to prevent cutting */
         .grass-hill {
             position: absolute;
             bottom: 0;
             left: -10%;
             width: 120%;
-            height: 18vh;
-            background: linear-gradient(to bottom, #0d2e1c 0%, #071f13 100%);
-            border-radius: 50% 50% 0 0 / 100% 100% 0 0; /* Gives a smooth painted curve hill look */
-            z-index: 2;
-            box-shadow: inset 0 15px 30px rgba(34, 197, 94, 0.08);
+            height: 15vh;
+            background: linear-gradient(to bottom, #092416 0%, #05160e 100%);
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            z-index: 4; /* Sits cleanly behind the main canvas elements */
             pointer-events: none;
         }
 
@@ -85,7 +82,7 @@
             letter-spacing: 2px;
             opacity: 0;
             animation: fadeIn 2s ease-in forwards 0.5s;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
         }
 
         .highlight {
@@ -114,10 +111,11 @@
 
         .canvas-area {
             position: relative;
-            width: 420px;
-            height: 420px;
+            width: 440px;
+            height: 440px;
             margin: 0 auto;
             order: 2;
+            z-index: 5; /* Forces drawing to overlap hills smoothly */
         }
 
         canvas {
@@ -131,11 +129,12 @@
             font-size: 1.05rem;
             line-height: 1.6;
             letter-spacing: 0.5px;
-            background: rgba(15, 17, 35, 0.45); /* Darker semi-transparent backing for easy reading */
-            backdrop-filter: blur(10px);
+            background: rgba(11, 13, 26, 0.6);
+            backdrop-filter: blur(12px);
             padding: 20px;
             opacity: 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            z-index: 6;
         }
 
         .left-note {
@@ -158,31 +157,32 @@
 
         @media (max-width: 899px) {
             .left-note { order: 2; text-align: center; border-right: none; border-bottom: 2px solid #ef4444; border-radius: 0 0 14px 14px; margin-top: 10px; }
-            .canvas-area { order: 1; }
+            .canvas-area { order: 1; width: 360px; height: 360px; }
             .right-note { order: 3; text-align: center; border-left: none; border-bottom: 2px solid #a855f7; border-radius: 0 0 14px 14px; }
-            .grass-hill { height: 10vh; }
+            .grass-hill { height: 8vh; }
         }
 
         .music-btn {
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 12px 30px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 14px 36px;
             color: #fff;
             border-radius: 40px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             letter-spacing: 1.5px;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             margin-top: 15px;
             outline: none;
             backdrop-filter: blur(5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 100;
         }
 
         .music-btn:hover {
             background: #ffffff;
             color: #050507;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
             transform: translateY(-2px);
         }
 
@@ -194,6 +194,9 @@
 <body>
 
     <div class="sky-art"></div>
+    
+    <svg class="constellation-overlay" viewBox="0 0 600 120" id="starMap"></svg>
+    
     <div class="grass-hill"></div>
 
     <div class="container">
@@ -205,7 +208,7 @@
             </div>
 
             <div class="canvas-area">
-                <canvas id="botanicalCanvas" width="450" height="450"></canvas>
+                <canvas id="botanicalCanvas" width="500" height="500"></canvas>
             </div>
             
             <div class="note right-note">
@@ -213,14 +216,47 @@
             </div>
         </div>
 
-        <audio id="bg-music" loop>
+        <audio id="bg-music" loop preload="auto">
             <source src="song.mp3" type="audio/mpeg">
+            <source src="song.mp3.mp3" type="audio/mpeg">
         </audio>
 
         <button class="music-btn" onclick="toggleMusic()">▶️ Play</button>
     </div>
 
     <script>
+        // 1. STAR CONSTELLATION MAPPING FOR "ZAINAB"
+        const starMap = document.getElementById('starMap');
+        const letterPoints = [
+            // Z
+            [[20,20], [60,20], [20,100], [60,100]],
+            // A
+            [[90,100], [110,20], [130,100], [100,65], [120,65]],
+            // I
+            [[160,20], [200,20], [180,20], [180,100], [160,100], [200,100]],
+            // N
+            [[230,100], [230,20], [270,100], [270,20]],
+            // A
+            [[300,100], [320,20], [340,100], [310,65], [330,65]],
+            // B
+            [[370,20], [370,100], [400,20], [410,40], [395,60], [370,60], [415,80], [395,100]]
+        ];
+
+        // Draw custom glowing stars mapping out the letters
+        letterPoints.forEach(letter => {
+            letter.forEach(pt => {
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                // Shift coordinates slightly right to center the name on screen canvas
+                circle.setAttribute("cx", pt[0] + 45);
+                circle.setAttribute("cy", pt[1]);
+                circle.setAttribute("r", Math.random() * 1.5 + 1.5);
+                circle.setAttribute("fill", "#ffffff");
+                circle.setAttribute("style", `opacity: ${Math.random() * 0.5 + 0.5}; filter: drop-shadow(0 0 4px rgba(255,255,255,0.9));`);
+                starMap.appendChild(circle);
+            });
+        });
+
+        // 2. BOTANICAL GARDEN CANVAS ENGINE
         const canvas = document.getElementById('botanicalCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -233,27 +269,28 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             const centerX = canvas.width / 2;
-            const startY = canvas.height * 0.95;
+            // Shifted the anchor point slightly up and embedded into the painted hill seamlessly
+            const startY = canvas.height * 0.88; 
             
             const maxCenterLen = 175;
             const currentCenterLen = maxCenterLen * botanicalProgress;
 
-            // Extra artistic drop shadow for depth against the background painterly elements
-            ctx.shadowColor = 'rgba(3, 20, 12, 0.6)';
-            ctx.shadowBlur = 6;
+            ctx.shadowColor = 'rgba(2, 12, 6, 0.5)';
+            ctx.shadowBlur = 8;
             
-            drawVine(centerX, startY, centerX, startY - currentCenterLen, '#22c55e', 4.5, -20);
+            // Draw Main Stems
+            drawVine(centerX, startY, centerX, startY - currentCenterLen, '#22c55e', 5, -20);
             
             if (botanicalProgress > 0.25) {
                 const p = (botanicalProgress - 0.25) / 0.75;
-                drawVine(centerX, startY - 40, centerX - (100 * p), startY - 40 - (95 * p), '#166534', 3.5, -45);
-                drawVine(centerX, startY - 55, centerX + (105 * p), startY - 55 - (85 * p), '#166534', 3.5, 45);
+                drawVine(centerX, startY - 40, centerX - (105 * p), startY - 40 - (100 * p), '#166534', 3.8, -45);
+                drawVine(centerX, startY - 55, centerX + (110 * p), startY - 55 - (90 * p), '#166534', 3.8, 45);
             }
             
             if (botanicalProgress > 0.45) {
                 const pSmall = (botanicalProgress - 0.45) / 0.55;
-                drawVine(centerX, startY - 20, centerX - (55 * pSmall), startY - 20 - (45 * pSmall), '#14532d', 2.5, -15);
-                drawVine(centerX, startY - 30, centerX + (50 * pSmall), startY - 30 - (50 * pSmall), '#14532d', 2.5, 20);
+                drawVine(centerX, startY - 20, centerX - (60 * pSmall), startY - 20 - (50 * pSmall), '#14532d', 2.8, -15);
+                drawVine(centerX, startY - 30, centerX + (55 * pSmall), startY - 30 - (55 * pSmall), '#14532d', 2.8, 20);
             }
             ctx.shadowBlur = 0;
 
@@ -265,21 +302,22 @@
 
             drawGardenLeaves(centerX, startY, maxCenterLen);
 
-            const mainRadius = 36;
+            const mainRadius = 38;
             const centerFlowerY = startY - maxCenterLen;
             
+            // Main Central Bloom
             drawFlower(centerX, centerFlowerY, mainRadius * bloomProgress, '#ef4444', '#b91c1c');
 
             if (bloomProgress > 0.35) {
                 const bloomSide = (bloomProgress - 0.35) / 0.65;
-                drawFlower(centerX - 100, startY - 135, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
-                drawFlower(centerX + 105, startY - 140, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
+                drawFlower(centerX - 105, startY - 140, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
+                drawFlower(centerX + 110, startY - 145, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
             }
 
             if (bloomProgress > 0.55) {
                 const bloomSmall = (bloomProgress - 0.55) / 0.45;
-                drawFlower(centerX - 55, startY - 65, (mainRadius * 0.5) * bloomSmall, '#f43f5e', '#be123c');
-                drawFlower(centerX + 50, startY - 80, (mainRadius * 0.55) * bloomSmall, '#f472b6', '#be123c');
+                drawFlower(centerX - 60, startY - 70, (mainRadius * 0.5) * bloomSmall, '#f43f5e', '#be123c');
+                drawFlower(centerX + 55, startY - 85, (mainRadius * 0.55) * bloomSmall, '#f472b6', '#be123c');
             }
 
             if (bloomProgress < 1) {
@@ -290,10 +328,10 @@
 
             if (bloomProgress >= 1) {
                 drawFlowerPistil(centerX, centerFlowerY, 10 * detailProgress);
-                drawFlowerPistil(centerX - 100, startY - 135, 7 * detailProgress);
-                drawFlowerPistil(centerX + 105, startY - 140, 7 * detailProgress);
-                drawFlowerPistil(centerX - 55, startY - 65, 4 * detailProgress);
-                drawFlowerPistil(centerX + 50, startY - 80, 4.5 * detailProgress);
+                drawFlowerPistil(centerX - 105, startY - 140, 7 * detailProgress);
+                drawFlowerPistil(centerX + 110, startY - 145, 7 * detailProgress);
+                drawFlowerPistil(centerX - 60, startY - 70, 4 * detailProgress);
+                drawFlowerPistil(centerX + 55, startY - 85, 4.5 * detailProgress);
 
                 if (detailProgress < 1) {
                     detailProgress += 0.03;
@@ -317,12 +355,12 @@
             ctx.strokeStyle = '#22c55e';
             ctx.lineWidth = 1;
 
-            for (let i = 2; i < 14; i++) {
+            for (let i = 1; i < 14; i++) {
                 const ratio = i / 14;
                 const leafY = startY - (totalLen * ratio);
                 const isRight = i % 2 === 0;
-                const leafX = centerX + (isRight ? 8 : -8);
-                drawOrganicLeaf(leafX, leafY, 14, isRight ? 35 : -35);
+                const leafX = centerX + (isRight ? 6 : -6);
+                drawOrganicLeaf(leafX, leafY, 15, isRight ? 35 : -35);
             }
 
             drawOrganicLeaf(centerX - 50, startY - 90, 11, -30);
@@ -351,16 +389,13 @@
             
             for (let i = 0; i < petals; i++) {
                 ctx.rotate((Math.PI * 2) / petals);
-                
                 let gradient = ctx.createRadialGradient(0, 0, 3, 0, -radius, radius);
                 gradient.addColorStop(0, primary);
                 gradient.addColorStop(1, secondary);
-
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
                 ctx.bezierCurveTo(-radius/1.4, -radius/1.4, -radius/1.4, -radius, 0, -radius);
                 ctx.bezierCurveTo(radius/1.4, -radius, radius/1.4, -radius/1.4, 0, 0);
-                
                 ctx.fillStyle = gradient;
                 ctx.fill();
             }
@@ -377,18 +412,30 @@
             ctx.shadowBlur = 0;
         }
 
+        // 3. SECURE HIGH-INTERACTION AUDIO TRIGGER
         function toggleMusic() {
             const music = document.getElementById('bg-music');
             const btn = document.querySelector('.music-btn');
             
+            // Force browser audio engine activation context
             if (!animationStarted) {
                 animationStarted = true;
+                // Double tap fallback override for tricky browsers
+                music.load(); 
                 drawBotanicalScene();
             }
 
             if (music.paused) {
-                music.play().catch(err => console.log("Audio check"));
-                btn.innerHTML = "⏸️ Pause";
+                const playPromise = music.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        btn.innerHTML = "⏸️ Pause";
+                    }).catch(error => {
+                        console.log("Audio stream blocked: ", error);
+                        // Quick click reset fallback
+                        btn.innerHTML = "⚠️ Tap Again to Play";
+                    });
+                }
             } else {
                 music.pause();
                 btn.innerHTML = "▶️ Play";
