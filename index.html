@@ -11,7 +11,8 @@
             box-sizing: border-box;
         }
         body {
-            background-color: #050507;
+            /* Painterly night sky background gradient */
+            background: linear-gradient(to bottom, #090a14 0%, #0f1123 40%, #1a1528 70%, #1b2624 100%);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
             display: flex;
@@ -22,17 +23,48 @@
             overflow-y: auto;
             color: #ffffff;
             padding: 20px;
+            position: relative;
         }
 
-        .bg-glow {
+        /* Abstract painted cloud layers and artistic sky texture */
+        .sky-art {
             position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, rgba(0,0,0,0) 80%);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 40%, rgba(236, 72, 153, 0.1) 0%, transparent 40%);
             z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Soft glowing star impressionism */
+        .sky-art::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 70%;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px);
+            background-size: 130px 130px, 200px 200px;
+            background-position: 0 0, 40px 60px;
+            opacity: 0.25;
+        }
+
+        /* Rolling painted green grass hill at the bottom */
+        .grass-hill {
+            position: absolute;
+            bottom: 0;
+            left: -10%;
+            width: 120%;
+            height: 18vh;
+            background: linear-gradient(to bottom, #0d2e1c 0%, #071f13 100%);
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0; /* Gives a smooth painted curve hill look */
+            z-index: 2;
+            box-shadow: inset 0 15px 30px rgba(34, 197, 94, 0.08);
             pointer-events: none;
         }
 
@@ -53,6 +85,7 @@
             letter-spacing: 2px;
             opacity: 0;
             animation: fadeIn 2s ease-in forwards 0.5s;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
         .highlight {
@@ -61,7 +94,6 @@
             text-shadow: 0 0 25px rgba(209, 170, 255, 0.4);
         }
 
-        /* 3-Column Layout for Desktop, Stacking for Mobile */
         .botanical-scene {
             display: flex;
             flex-direction: column;
@@ -85,7 +117,7 @@
             width: 420px;
             height: 420px;
             margin: 0 auto;
-            order: 2; /* Keeps flower in the middle on desktop */
+            order: 2;
         }
 
         canvas {
@@ -94,20 +126,20 @@
             display: block;
         }
 
-        /* Note Styling */
         .note {
             max-width: 280px;
             font-size: 1.05rem;
             line-height: 1.6;
             letter-spacing: 0.5px;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(15, 17, 35, 0.45); /* Darker semi-transparent backing for easy reading */
+            backdrop-filter: blur(10px);
             padding: 20px;
             opacity: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        /* Left side sarcastic note */
         .left-note {
-            border-right: 2px solid #ef4444; /* Sarcastic red border */
+            border-right: 2px solid #ef4444;
             border-radius: 14px 0 0 14px;
             animation: fadeIn 2s ease-in forwards 3.2s;
             text-align: right;
@@ -115,9 +147,8 @@
             color: #fca5a5;
         }
 
-        /* Right side sincere note */
         .right-note {
-            border-left: 2px solid #a855f7; /* Sincere purple border */
+            border-left: 2px solid #a855f7;
             border-radius: 0 14px 14px 0;
             animation: fadeIn 2s ease-in forwards 3s;
             text-align: left;
@@ -125,16 +156,16 @@
             color: #d1d5db;
         }
 
-        /* Mobile order overrides */
         @media (max-width: 899px) {
-            .left-note { order: 2; text-align: center; border-right: none; border-bottom: 2px solid #ef4444; border-radius: 0 0 14px 14px; }
+            .left-note { order: 2; text-align: center; border-right: none; border-bottom: 2px solid #ef4444; border-radius: 0 0 14px 14px; margin-top: 10px; }
             .canvas-area { order: 1; }
             .right-note { order: 3; text-align: center; border-left: none; border-bottom: 2px solid #a855f7; border-radius: 0 0 14px 14px; }
+            .grass-hill { height: 10vh; }
         }
 
         .music-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 12px 30px;
             color: #fff;
             border-radius: 40px;
@@ -145,6 +176,7 @@
             margin-top: 15px;
             outline: none;
             backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         .music-btn:hover {
@@ -161,7 +193,8 @@
 </head>
 <body>
 
-    <div class="bg-glow"></div>
+    <div class="sky-art"></div>
+    <div class="grass-hill"></div>
 
     <div class="container">
         <h1>Happy Birthday <span class="highlight">Ms. Cool</span> 😉❤️</h1>
@@ -184,7 +217,7 @@
             <source src="song.mp3" type="audio/mpeg">
         </audio>
 
-        <button class="music-btn" onclick="toggleMusic()">🎵 Play</button>
+        <button class="music-btn" onclick="toggleMusic()">▶️ Play</button>
     </div>
 
     <script>
@@ -205,26 +238,21 @@
             const maxCenterLen = 175;
             const currentCenterLen = maxCenterLen * botanicalProgress;
 
-            // 1. Draw Intricate Vine System
-            ctx.shadowColor = '#064e3b';
-            ctx.shadowBlur = 4;
+            // Extra artistic drop shadow for depth against the background painterly elements
+            ctx.shadowColor = 'rgba(3, 20, 12, 0.6)';
+            ctx.shadowBlur = 6;
             
-            // Central main stem
             drawVine(centerX, startY, centerX, startY - currentCenterLen, '#22c55e', 4.5, -20);
             
             if (botanicalProgress > 0.25) {
                 const p = (botanicalProgress - 0.25) / 0.75;
-                // Extended Left branch
                 drawVine(centerX, startY - 40, centerX - (100 * p), startY - 40 - (95 * p), '#166534', 3.5, -45);
-                // Extended Right branch
                 drawVine(centerX, startY - 55, centerX + (105 * p), startY - 55 - (85 * p), '#166534', 3.5, 45);
             }
             
             if (botanicalProgress > 0.45) {
                 const pSmall = (botanicalProgress - 0.45) / 0.55;
-                // Low Left mini stem
                 drawVine(centerX, startY - 20, centerX - (55 * pSmall), startY - 20 - (45 * pSmall), '#14532d', 2.5, -15);
-                // Low Right mini stem
                 drawVine(centerX, startY - 30, centerX + (50 * pSmall), startY - 30 - (50 * pSmall), '#14532d', 2.5, 20);
             }
             ctx.shadowBlur = 0;
@@ -235,29 +263,22 @@
                 return;
             }
 
-            // 2. Leaves
             drawGardenLeaves(centerX, startY, maxCenterLen);
 
-            // 3. Bloom Flowers
             const mainRadius = 36;
             const centerFlowerY = startY - maxCenterLen;
             
-            // Main Center (Ruby Red)
             drawFlower(centerX, centerFlowerY, mainRadius * bloomProgress, '#ef4444', '#b91c1c');
 
             if (bloomProgress > 0.35) {
                 const bloomSide = (bloomProgress - 0.35) / 0.65;
-                // Left Flower (Vibrant Pink)
                 drawFlower(centerX - 100, startY - 135, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
-                // Right Flower (Vibrant Pink)
                 drawFlower(centerX + 105, startY - 140, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
             }
 
             if (bloomProgress > 0.55) {
                 const bloomSmall = (bloomProgress - 0.55) / 0.45;
-                // Smaller Low Left
                 drawFlower(centerX - 55, startY - 65, (mainRadius * 0.5) * bloomSmall, '#f43f5e', '#be123c');
-                // Smaller Low Right
                 drawFlower(centerX + 50, startY - 80, (mainRadius * 0.55) * bloomSmall, '#f472b6', '#be123c');
             }
 
@@ -267,7 +288,6 @@
                 return;
             }
 
-            // 4. Golden Centers Reveal
             if (bloomProgress >= 1) {
                 drawFlowerPistil(centerX, centerFlowerY, 10 * detailProgress);
                 drawFlowerPistil(centerX - 100, startY - 135, 7 * detailProgress);
@@ -367,11 +387,11 @@
             }
 
             if (music.paused) {
-                music.play().catch(err => console.log("Audio config"));
+                music.play().catch(err => console.log("Audio check"));
                 btn.innerHTML = "⏸️ Pause";
             } else {
                 music.pause();
-                btn.innerHTML = "🎵 Play";
+                btn.innerHTML = "▶️ Play";
             }
         }
     </script>
