@@ -36,15 +36,13 @@
             pointer-events: none;
         }
 
-        /* Centered sky zone for the constellation */
+        /* Full screen space overlay for stars everywhere */
         .constellation-overlay {
             position: absolute;
-            top: 18%; /* Lowered into the middle section of the sky */
-            left: 50%;
-            transform: translateX(-50%);
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 700px; /* Tighter container so letters stay perfectly readable */
-            height: 130px;
+            height: 100%;
             z-index: 2;
             pointer-events: none;
         }
@@ -192,7 +190,7 @@
 <body>
 
     <div class="sky-art"></div>
-    <svg class="constellation-overlay" id="starMap" viewBox="0 0 700 130"></svg>
+    <svg class="constellation-overlay" id="starMap"></svg>
     <div class="grass-hill"></div>
 
     <div class="container">
@@ -217,54 +215,68 @@
         </div>
     </div>
 
-    <audio id="bg-music" loop preload="auto"></audio>
+    <audio id="bg-music" loop preload="auto" src="song.mp3"></audio>
 
     <script>
-        // 1. TIGHTER DEFINED CONSTELLATION MAP FOR "ZAINAB"
+        // 1. PERFECTLY ALIGNED CONSTELLATION MAP
         const starMap = document.getElementById('starMap');
-        const constellation = [
+        
+        // Crisp letter coordinate groups designed for an absolute display window
+        const letterGroups = [
             // Z
-            [[40,25], [95,25], [40,105], [95,105], [58,80], [76,55]],
+            [[30,40], [42,40], [55,40], [30,100], [42,100], [55,100], [48,60], [38,80]],
             // A
-            [[125,105], [150,25], [175,105], [137,70], [163,70], [143,50], [157,50]],
-            // I
-            [[205,25], [245,25], [225,25], [225,105], [205,105], [245,105]],
-            // N
-            [[275,105], [275,25], [295,50], [315,80], [335,105], [335,25]],
+            [[75,100], [82,70], [90,40], [98,70], [105,100], [83,75], [97,75]],
+            // I (Clean distinct top/bottom bars with a solid middle pillar)
+            [[125,40], [137,40], [150,40], [137,60], [137,80], [125,100], [137,100], [150,100]],
+            // N (Sharp angled tracking lines)
+            [[170,100], [170,70], [170,40], [182,60], [194,80], [205,100], [205,70], [205,40]],
             // A
-            [[365,105], [390,25], [415,105], [377,70], [403,70], [383,50], [397,50]],
+            [[225,100], [232,70], [240,40], [248,70], [255,100], [233,75], [247,75]],
             // B
-            [[445,25], [445,105], [445,65], [480,25], [490,45], [470,65], [495,85], [480,105], [445,105]]
+            [[275,40], [275,70], [275,100], [290,40], [300,55], [290,70], [302,85], [290,100]]
         ];
 
-        function buildConstellation() {
+        function drawSkyElements() {
             starMap.innerHTML = '';
+            const totalWidth = window.innerWidth;
+            const totalHeight = window.innerHeight;
             
-            // Render structured letter points
-            constellation.forEach(letter => {
+            // Set SVG view parameters dynamically based on actual screen size
+            starMap.setAttribute("viewBox", `0 0 ${totalWidth} ${totalHeight}`);
+            
+            // Center calculation for the word constellation block in the upper middle area
+            const wordWidth = 330; 
+            const startX = (totalWidth - wordWidth) / 2;
+            const startY = totalHeight * 0.18; // Perfectly positioned in the sky midline
+
+            // Render letters smoothly
+            letterGroups.forEach(letter => {
                 letter.forEach(pt => {
                     const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                    // Added a horizontal adjustment offset to perfectly center the word inside the SVG view
-                    circle.setAttribute("cx", pt[0] + 80);
-                    circle.setAttribute("cy", pt[1]);
-                    circle.setAttribute("r", Math.random() * 1.2 + 1.8);
+                    circle.setAttribute("cx", startX + pt[0]);
+                    circle.setAttribute("cy", startY + (pt[1] - 40));
+                    circle.setAttribute("r", Math.random() * 0.8 + 2.0); // Made letter stars slightly chunkier to stand out
                     circle.setAttribute("fill", "#ffffff");
-                    circle.setAttribute("style", `opacity: ${Math.random() * 0.3 + 0.7}; filter: drop-shadow(0 0 5px rgba(255,255,255,0.95));`);
+                    circle.setAttribute("style", `opacity: 0.95; filter: drop-shadow(0 0 5px rgba(255,255,255,0.95));`);
                     starMap.appendChild(circle);
                 });
             });
 
-            // Ambient background tiny star dust
-            for(let i=0; i<30; i++) {
+            // SCATTERED LITTLE STARS EVERYWHERE ACROSS THE WHOLE SKY SCREEN
+            const totalBackgroundStars = Math.floor(totalWidth / 12); 
+            for(let i = 0; i < totalBackgroundStars; i++) {
                 const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                circle.setAttribute("cx", Math.random() * 700);
-                circle.setAttribute("cy", Math.random() * 130);
-                circle.setAttribute("r", Math.random() * 0.8 + 0.4);
-                circle.setAttribute("fill", "rgba(255,255,255,0.35)");
+                circle.setAttribute("cx", Math.random() * totalWidth);
+                circle.setAttribute("cy", Math.random() * (totalHeight * 0.75)); // Fills sky all the way down to the grass line
+                circle.setAttribute("r", Math.random() * 0.9 + 0.4);
+                circle.setAttribute("fill", "rgba(255,255,255,0.45)");
                 starMap.appendChild(circle);
             }
         }
-        buildConstellation();
+        
+        drawSkyElements();
+        window.addEventListener('resize', drawSkyElements);
 
         // 2. BOTANICAL GARDEN CANVAS ENGINE
         const canvas = document.getElementById('botanicalCanvas');
@@ -415,16 +427,13 @@
             ctx.shadowBlur = 0;
         }
 
-        // 3. ABSOLUTE LIVE SERVER AUDIO RESOLVER
+        // 3. SECURE INTERACTION PLAYER
         function toggleMusic() {
             const music = document.getElementById('bg-music');
             const btn = document.querySelector('.music-btn');
             
             if (!animationStarted) {
                 animationStarted = true;
-                // Force an absolute URL fetch to bypass local sub-pathing completely
-                music.src = "https://sibrangoodman.github.io/hbd/song.mp3";
-                music.load();
                 drawBotanicalScene();
             }
 
@@ -432,14 +441,8 @@
                 music.play().then(() => {
                     btn.innerHTML = "⏸️ Pause";
                 }).catch(error => {
-                    console.log("Primary absolute path blocked, attempting raw double extension fallback...");
-                    music.src = "https://sibrangoodman.github.io/hbd/song.mp3.mp3";
-                    music.load();
-                    music.play().then(() => {
-                        btn.innerHTML = "⏸️ Pause";
-                    }).catch(err => {
-                        btn.innerHTML = "⚠️ Try on Another Browser";
-                    });
+                    console.log("Audio load error context details: ", error);
+                    btn.innerHTML = "⚠️ Check file name on GitHub";
                 });
             } else {
                 music.pause();
