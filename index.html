@@ -11,21 +11,18 @@
             box-sizing: border-box;
         }
         body {
-            background: linear-gradient(to bottom, #070814 0%, #0b0d1a 40%, #131124 70%, #141d1c 100%);
+            background: linear-gradient(to bottom, #060713 0%, #0b0d1a 40%, #111022 70%, #0f1614 100%);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            overflow-x: hidden;
-            overflow-y: auto;
+            overflow: hidden;
             color: #ffffff;
-            padding: 20px;
             position: relative;
         }
 
-        /* Ambient painted sky textures */
         .sky-art {
             position: absolute;
             top: 0;
@@ -33,89 +30,84 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 30% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 80% 40%, rgba(236, 72, 153, 0.08) 0%, transparent 40%);
+                radial-gradient(circle at 25% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 75% 25%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
             z-index: 1;
             pointer-events: none;
         }
 
-        /* Constellation container */
+        /* Full-screen wide scattered constellation layer */
         .constellation-overlay {
             position: absolute;
-            top: 12%;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 15%;
+            left: 0;
             width: 100%;
-            max-width: 600px;
-            height: 120px;
+            height: 25vh;
             z-index: 2;
             pointer-events: none;
         }
 
-        /* Smooth rolling hills with layered blending to prevent cutting */
+        /* Fixed Ground Hill at the very bottom */
         .grass-hill {
             position: absolute;
-            bottom: 0;
+            bottom: -5vh;
             left: -10%;
             width: 120%;
-            height: 15vh;
-            background: linear-gradient(to bottom, #092416 0%, #05160e 100%);
+            height: 25vh;
+            background: linear-gradient(to bottom, #092215 0%, #04120a 100%);
             border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-            z-index: 4; /* Sits cleanly behind the main canvas elements */
+            z-index: 4; 
             pointer-events: none;
+            box-shadow: inset 0 20px 40px rgba(34, 197, 94, 0.04);
         }
 
         .container {
-            text-align: center;
-            z-index: 10;
+            width: 100%;
+            max-width: 1300px;
+            height: 100vh;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            gap: 20px;
-            width: 100%;
-            max-width: 1200px;
+            padding: 30px 20px 0 20px;
+            z-index: 10;
+            position: relative;
         }
 
         h1 {
-            font-size: 2.2rem;
+            font-size: 2.3rem;
             font-weight: 300;
             letter-spacing: 2px;
             opacity: 0;
             animation: fadeIn 2s ease-in forwards 0.5s;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.7);
+            z-index: 10;
         }
 
         .highlight {
             color: #d1aaff;
             font-weight: 600;
-            text-shadow: 0 0 25px rgba(209, 170, 255, 0.4);
+            text-shadow: 0 0 25px rgba(209, 170, 255, 0.5);
         }
 
+        /* Layout structure anchoring everything down */
         .botanical-scene {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 25px;
             width: 100%;
-            margin-top: 10px;
-        }
-
-        @media (min-width: 900px) {
-            .botanical-scene {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
+            flex-grow: 1;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: -15px; /* Pulls base right into hill overlap line */
+            z-index: 15;
         }
 
         .canvas-area {
             position: relative;
-            width: 440px;
+            width: 480px;
             height: 440px;
             margin: 0 auto;
-            order: 2;
-            z-index: 5; /* Forces drawing to overlap hills smoothly */
+            display: flex;
+            align-items: flex-end;
         }
 
         canvas {
@@ -125,65 +117,72 @@
         }
 
         .note {
-            max-width: 280px;
+            width: 290px;
             font-size: 1.05rem;
             line-height: 1.6;
             letter-spacing: 0.5px;
-            background: rgba(11, 13, 26, 0.6);
-            backdrop-filter: blur(12px);
-            padding: 20px;
+            background: rgba(11, 13, 26, 0.65);
+            backdrop-filter: blur(15px);
+            padding: 22px;
             opacity: 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            z-index: 6;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+            margin-bottom: 9vh; /* Hovers perfectly above the hill layer */
+            border-radius: 14px;
         }
 
         .left-note {
-            border-right: 2px solid #ef4444;
-            border-radius: 14px 0 0 14px;
-            animation: fadeIn 2s ease-in forwards 3.2s;
+            border-right: 3px solid #ef4444;
+            animation: fadeIn 2s ease-in forwards 2.5s;
             text-align: right;
-            order: 1;
-            color: #fca5a5;
         }
 
         .right-note {
-            border-left: 2px solid #a855f7;
-            border-radius: 0 14px 14px 0;
-            animation: fadeIn 2s ease-in forwards 3s;
+            border-left: 3px solid #a855f7;
+            animation: fadeIn 2s ease-in forwards 2.3s;
             text-align: left;
-            order: 3;
-            color: #d1d5db;
         }
 
-        @media (max-width: 899px) {
-            .left-note { order: 2; text-align: center; border-right: none; border-bottom: 2px solid #ef4444; border-radius: 0 0 14px 14px; margin-top: 10px; }
-            .canvas-area { order: 1; width: 360px; height: 360px; }
-            .right-note { order: 3; text-align: center; border-left: none; border-bottom: 2px solid #a855f7; border-radius: 0 0 14px 14px; }
-            .grass-hill { height: 8vh; }
+        /* Controls Area centered inside the green hill ground */
+        .controls-area {
+            width: 100%;
+            height: 12vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
         }
 
         .music-btn {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 14px 36px;
+            padding: 12px 40px;
             color: #fff;
             border-radius: 40px;
             cursor: pointer;
             font-size: 0.95rem;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            margin-top: 15px;
-            outline: none;
             backdrop-filter: blur(5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
         .music-btn:hover {
             background: #ffffff;
             color: #050507;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
             transform: translateY(-2px);
+        }
+
+        @media (max-width: 900px) {
+            body { overflow-y: auto; height: auto; }
+            .container { height: auto; padding-bottom: 20px; }
+            .botanical-scene { flex-direction: column; align-items: center; margin-bottom: 0; }
+            .canvas-area { width: 340px; height: 320px; margin-top: 20px; }
+            .note { margin-bottom: 20px; width: 100%; max-width: 320px; text-align: center !important; border-left: none !important; border-right: none !important; border-bottom: 3px solid; }
+            .left-note { order: 2; border-bottom-color: #ef4444; }
+            .right-note { order: 3; border-bottom-color: #a855f7; }
+            .controls-area { height: auto; margin-top: 20px; }
+            .grass-hill { height: 150px; bottom: -20px; }
         }
 
         @keyframes fadeIn {
@@ -194,9 +193,7 @@
 <body>
 
     <div class="sky-art"></div>
-    
-    <svg class="constellation-overlay" viewBox="0 0 600 120" id="starMap"></svg>
-    
+    <svg class="constellation-overlay" id="starMap" preserveAspectRatio="none"></svg>
     <div class="grass-hill"></div>
 
     <div class="container">
@@ -208,7 +205,7 @@
             </div>
 
             <div class="canvas-area">
-                <canvas id="botanicalCanvas" width="500" height="500"></canvas>
+                <canvas id="botanicalCanvas" width="480" height="440"></canvas>
             </div>
             
             <div class="note right-note">
@@ -216,45 +213,70 @@
             </div>
         </div>
 
-        <audio id="bg-music" loop preload="auto">
-            <source src="song.mp3" type="audio/mpeg">
-            <source src="song.mp3.mp3" type="audio/mpeg">
-        </audio>
-
-        <button class="music-btn" onclick="toggleMusic()">▶️ Play</button>
+        <div class="controls-area">
+            <button class="music-btn" onclick="toggleMusic()">▶️ Play</button>
+        </div>
     </div>
 
+    <audio id="bg-music" loop preload="auto">
+        <source src="song.mp3" type="audio/mpeg">
+        <source src="song.mp3.mp3" type="audio/mpeg">
+        <source src="./song.mp3" type="audio/mpeg">
+    </audio>
+
     <script>
-        // 1. STAR CONSTELLATION MAPPING FOR "ZAINAB"
+        // 1. SCATTERED WIDE SKY CONSTELLATION MAP (Spelling ZAINAB clearly across screen width)
         const starMap = document.getElementById('starMap');
-        const letterPoints = [
+        
+        // Letter coordinates mapped into percentage widths across the viewport layout
+        const constellation = [
             // Z
-            [[20,20], [60,20], [20,100], [60,100]],
+            [[5,20], [12,20], [5,80], [12,80], [7,60], [9,40]],
             // A
-            [[90,100], [110,20], [130,100], [100,65], [120,65]],
+            [[18,80], [21,20], [24,80], [19.5,55], [22.5,55]],
             // I
-            [[160,20], [200,20], [180,20], [180,100], [160,100], [200,100]],
+            [[31,20], [35,20], [33,20], [33,80], [31,80], [35,80]],
             // N
-            [[230,100], [230,20], [270,100], [270,20]],
+            [[42,80], [42,20], [48,80], [48,20], [45,50]],
             // A
-            [[300,100], [320,20], [340,100], [310,65], [330,65]],
+            [[55,80], [58,20], [61,80], [56.5,55], [59.5,55]],
             // B
-            [[370,20], [370,100], [400,20], [410,40], [395,60], [370,60], [415,80], [395,100]]
+            [[69,20], [69,80], [73,20], [75,35], [72,50], [69,50], [75,65], [73,80]]
         ];
 
-        // Draw custom glowing stars mapping out the letters
-        letterPoints.forEach(letter => {
-            letter.forEach(pt => {
-                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                // Shift coordinates slightly right to center the name on screen canvas
-                circle.setAttribute("cx", pt[0] + 45);
-                circle.setAttribute("cy", pt[1]);
-                circle.setAttribute("r", Math.random() * 1.5 + 1.5);
-                circle.setAttribute("fill", "#ffffff");
-                circle.setAttribute("style", `opacity: ${Math.random() * 0.5 + 0.5}; filter: drop-shadow(0 0 4px rgba(255,255,255,0.9));`);
-                starMap.appendChild(circle);
+        function buildConstellation() {
+            starMap.innerHTML = '';
+            const width = window.innerWidth;
+            
+            // Render letters
+            constellation.forEach(letter => {
+                letter.forEach(pt => {
+                    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    const xCoord = (pt[0] / 100) * width;
+                    const yCoord = pt[1];
+                    
+                    circle.setAttribute("cx", xCoord);
+                    circle.setAttribute("cy", yCoord);
+                    circle.setAttribute("r", Math.random() * 1.5 + 1.8);
+                    circle.setAttribute("fill", "#ffffff");
+                    circle.setAttribute("style", `opacity: ${Math.random() * 0.4 + 0.6}; filter: drop-shadow(0 0 5px rgba(255,255,255,0.95));`);
+                    starMap.appendChild(circle);
+                });
             });
-        });
+
+            // Fill empty background with scattered smaller cosmic dust stars
+            for(let i=0; i<45; i++) {
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", Math.random() * width);
+                circle.setAttribute("cy", Math.random() * 100);
+                circle.setAttribute("r", Math.random() * 1);
+                circle.setAttribute("fill", "rgba(255,255,255,0.4)");
+                starMap.appendChild(circle);
+            }
+        }
+        
+        buildConstellation();
+        window.addEventListener('resize', buildConstellation);
 
         // 2. BOTANICAL GARDEN CANVAS ENGINE
         const canvas = document.getElementById('botanicalCanvas');
@@ -269,8 +291,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             const centerX = canvas.width / 2;
-            // Shifted the anchor point slightly up and embedded into the painted hill seamlessly
-            const startY = canvas.height * 0.88; 
+            const startY = canvas.height; // Sets roots 100% at the very baseline bottom frame edge
             
             const maxCenterLen = 175;
             const currentCenterLen = maxCenterLen * botanicalProgress;
@@ -278,19 +299,18 @@
             ctx.shadowColor = 'rgba(2, 12, 6, 0.5)';
             ctx.shadowBlur = 8;
             
-            // Draw Main Stems
-            drawVine(centerX, startY, centerX, startY - currentCenterLen, '#22c55e', 5, -20);
+            drawVine(centerX, startY, centerX, startY - currentCenterLen, '#22c55e', 5.5, -10);
             
-            if (botanicalProgress > 0.25) {
-                const p = (botanicalProgress - 0.25) / 0.75;
-                drawVine(centerX, startY - 40, centerX - (105 * p), startY - 40 - (100 * p), '#166534', 3.8, -45);
-                drawVine(centerX, startY - 55, centerX + (110 * p), startY - 55 - (90 * p), '#166534', 3.8, 45);
+            if (botanicalProgress > 0.2) {
+                const p = (botanicalProgress - 0.2) / 0.8;
+                drawVine(centerX, startY - 35, centerX - (130 * p), startY - 35 - (115 * p), '#166534', 4, -30);
+                drawVine(centerX, startY - 50, centerX + (135 * p), startY - 50 - (105 * p), '#166534', 4, 30);
             }
             
             if (botanicalProgress > 0.45) {
                 const pSmall = (botanicalProgress - 0.45) / 0.55;
-                drawVine(centerX, startY - 20, centerX - (60 * pSmall), startY - 20 - (50 * pSmall), '#14532d', 2.8, -15);
-                drawVine(centerX, startY - 30, centerX + (55 * pSmall), startY - 30 - (55 * pSmall), '#14532d', 2.8, 20);
+                drawVine(centerX, startY - 15, centerX - (80 * pSmall), startY - 15 - (60 * pSmall), '#14532d', 2.8, -15);
+                drawVine(centerX, startY - 25, centerX + (75 * pSmall), startY - 25 - (65 * pSmall), '#14532d', 2.8, 15);
             }
             ctx.shadowBlur = 0;
 
@@ -305,19 +325,18 @@
             const mainRadius = 38;
             const centerFlowerY = startY - maxCenterLen;
             
-            // Main Central Bloom
             drawFlower(centerX, centerFlowerY, mainRadius * bloomProgress, '#ef4444', '#b91c1c');
 
             if (bloomProgress > 0.35) {
                 const bloomSide = (bloomProgress - 0.35) / 0.65;
-                drawFlower(centerX - 105, startY - 140, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
-                drawFlower(centerX + 110, startY - 145, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
+                drawFlower(centerX - 130, startY - 150, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
+                drawFlower(centerX + 135, startY - 155, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
             }
 
             if (bloomProgress > 0.55) {
                 const bloomSmall = (bloomProgress - 0.55) / 0.45;
-                drawFlower(centerX - 60, startY - 70, (mainRadius * 0.5) * bloomSmall, '#f43f5e', '#be123c');
-                drawFlower(centerX + 55, startY - 85, (mainRadius * 0.55) * bloomSmall, '#f472b6', '#be123c');
+                drawFlower(centerX - 80, startY - 75, (mainRadius * 0.52) * bloomSmall, '#f43f5e', '#be123c');
+                drawFlower(centerX + 75, startY - 90, (mainRadius * 0.56) * bloomSmall, '#f472b6', '#be123c');
             }
 
             if (bloomProgress < 1) {
@@ -328,10 +347,10 @@
 
             if (bloomProgress >= 1) {
                 drawFlowerPistil(centerX, centerFlowerY, 10 * detailProgress);
-                drawFlowerPistil(centerX - 105, startY - 140, 7 * detailProgress);
-                drawFlowerPistil(centerX + 110, startY - 145, 7 * detailProgress);
-                drawFlowerPistil(centerX - 60, startY - 70, 4 * detailProgress);
-                drawFlowerPistil(centerX + 55, startY - 85, 4.5 * detailProgress);
+                drawFlowerPistil(centerX - 130, startY - 150, 7 * detailProgress);
+                drawFlowerPistil(centerX + 135, startY - 155, 7 * detailProgress);
+                drawFlowerPistil(centerX - 80, startY - 75, 4 * detailProgress);
+                drawFlowerPistil(centerX + 75, startY - 90, 4.5 * detailProgress);
 
                 if (detailProgress < 1) {
                     detailProgress += 0.03;
@@ -359,14 +378,11 @@
                 const ratio = i / 14;
                 const leafY = startY - (totalLen * ratio);
                 const isRight = i % 2 === 0;
-                const leafX = centerX + (isRight ? 6 : -6);
+                const leafX = centerX + (isRight ? 5 : -5);
                 drawOrganicLeaf(leafX, leafY, 15, isRight ? 35 : -35);
             }
-
-            drawOrganicLeaf(centerX - 50, startY - 90, 11, -30);
-            drawOrganicLeaf(centerX + 55, startY - 105, 11, 30);
-            drawOrganicLeaf(centerX - 25, startY - 45, 9, -40);
-            drawOrganicLeaf(centerX + 20, startY - 50, 9, 40);
+            drawOrganicLeaf(centerX - 65, startY - 100, 12, -30);
+            drawOrganicLeaf(centerX + 70, startY - 110, 12, 30);
         }
 
         function drawOrganicLeaf(x, y, radius, angle) {
@@ -386,7 +402,6 @@
             const petals = 6;
             ctx.save();
             ctx.translate(x, y);
-            
             for (let i = 0; i < petals; i++) {
                 ctx.rotate((Math.PI * 2) / petals);
                 let gradient = ctx.createRadialGradient(0, 0, 3, 0, -radius, radius);
@@ -412,33 +427,45 @@
             ctx.shadowBlur = 0;
         }
 
-        // 3. SECURE HIGH-INTERACTION AUDIO TRIGGER
+        // 3. FORCE DIRECTED REPOSITORY PATH AUDIO CONTROLLER
         function toggleMusic() {
             const music = document.getElementById('bg-music');
             const btn = document.querySelector('.music-btn');
             
-            // Force browser audio engine activation context
             if (!animationStarted) {
                 animationStarted = true;
-                // Double tap fallback override for tricky browsers
-                music.load(); 
+                // Force load internal media stream relative to context folder
+                music.src = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/song.mp3';
+                music.load();
                 drawBotanicalScene();
             }
 
-            if (music.paused) {
-                const playPromise = music.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
+            const playPromise = music.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    if (music.paused) {
+                        btn.innerHTML = "▶️ Play";
+                    } else {
                         btn.innerHTML = "⏸️ Pause";
-                    }).catch(error => {
-                        console.log("Audio stream blocked: ", error);
-                        // Quick click reset fallback
-                        btn.innerHTML = "⚠️ Tap Again to Play";
+                    }
+                }).catch(error => {
+                    // Fallback to try alternative double-extension path directly if primary path is cached out
+                    console.log("Primary track path failed, executing backup track stream layout...");
+                    music.src = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/song.mp3.mp3';
+                    music.play().then(() => {
+                        btn.innerHTML = "⏸️ Pause";
+                    }).catch(err => {
+                        btn.innerHTML = "⚠️ Clear Cache & Click Again";
                     });
+                });
+            }
+            
+            if (!music.paused && animationStarted) {
+                // If it's already playing, allow toggle to pause smoothly
+                if (btn.innerHTML === "⏸️ Pause") {
+                    music.pause();
+                    btn.innerHTML = "▶️ Play";
                 }
-            } else {
-                music.pause();
-                btn.innerHTML = "▶️ Play";
             }
         }
     </script>
