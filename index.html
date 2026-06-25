@@ -36,18 +36,19 @@
             pointer-events: none;
         }
 
-        /* Full-screen wide scattered constellation layer */
+        /* Centered sky zone for the constellation */
         .constellation-overlay {
             position: absolute;
-            top: 15%;
-            left: 0;
+            top: 18%; /* Lowered into the middle section of the sky */
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
-            height: 25vh;
+            max-width: 700px; /* Tighter container so letters stay perfectly readable */
+            height: 130px;
             z-index: 2;
             pointer-events: none;
         }
 
-        /* Fixed Ground Hill at the very bottom */
         .grass-hill {
             position: absolute;
             bottom: -5vh;
@@ -90,14 +91,13 @@
             text-shadow: 0 0 25px rgba(209, 170, 255, 0.5);
         }
 
-        /* Layout structure anchoring everything down */
         .botanical-scene {
             display: flex;
             width: 100%;
             flex-grow: 1;
             align-items: flex-end;
             justify-content: space-between;
-            margin-bottom: -15px; /* Pulls base right into hill overlap line */
+            margin-bottom: -15px; 
             z-index: 15;
         }
 
@@ -126,7 +126,7 @@
             padding: 22px;
             opacity: 0;
             box-shadow: 0 12px 35px rgba(0,0,0,0.5);
-            margin-bottom: 9vh; /* Hovers perfectly above the hill layer */
+            margin-bottom: 9vh; 
             border-radius: 14px;
         }
 
@@ -142,7 +142,6 @@
             text-align: left;
         }
 
-        /* Controls Area centered inside the green hill ground */
         .controls-area {
             width: 100%;
             height: 12vh;
@@ -193,7 +192,7 @@
 <body>
 
     <div class="sky-art"></div>
-    <svg class="constellation-overlay" id="starMap" preserveAspectRatio="none"></svg>
+    <svg class="constellation-overlay" id="starMap" viewBox="0 0 700 130"></svg>
     <div class="grass-hill"></div>
 
     <div class="container">
@@ -218,65 +217,54 @@
         </div>
     </div>
 
-    <audio id="bg-music" loop preload="auto">
-        <source src="song.mp3" type="audio/mpeg">
-        <source src="song.mp3.mp3" type="audio/mpeg">
-        <source src="./song.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="bg-music" loop preload="auto"></audio>
 
     <script>
-        // 1. SCATTERED WIDE SKY CONSTELLATION MAP (Spelling ZAINAB clearly across screen width)
+        // 1. TIGHTER DEFINED CONSTELLATION MAP FOR "ZAINAB"
         const starMap = document.getElementById('starMap');
-        
-        // Letter coordinates mapped into percentage widths across the viewport layout
         const constellation = [
             // Z
-            [[5,20], [12,20], [5,80], [12,80], [7,60], [9,40]],
+            [[40,25], [95,25], [40,105], [95,105], [58,80], [76,55]],
             // A
-            [[18,80], [21,20], [24,80], [19.5,55], [22.5,55]],
+            [[125,105], [150,25], [175,105], [137,70], [163,70], [143,50], [157,50]],
             // I
-            [[31,20], [35,20], [33,20], [33,80], [31,80], [35,80]],
+            [[205,25], [245,25], [225,25], [225,105], [205,105], [245,105]],
             // N
-            [[42,80], [42,20], [48,80], [48,20], [45,50]],
+            [[275,105], [275,25], [295,50], [315,80], [335,105], [335,25]],
             // A
-            [[55,80], [58,20], [61,80], [56.5,55], [59.5,55]],
+            [[365,105], [390,25], [415,105], [377,70], [403,70], [383,50], [397,50]],
             // B
-            [[69,20], [69,80], [73,20], [75,35], [72,50], [69,50], [75,65], [73,80]]
+            [[445,25], [445,105], [445,65], [480,25], [490,45], [470,65], [495,85], [480,105], [445,105]]
         ];
 
         function buildConstellation() {
             starMap.innerHTML = '';
-            const width = window.innerWidth;
             
-            // Render letters
+            // Render structured letter points
             constellation.forEach(letter => {
                 letter.forEach(pt => {
                     const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                    const xCoord = (pt[0] / 100) * width;
-                    const yCoord = pt[1];
-                    
-                    circle.setAttribute("cx", xCoord);
-                    circle.setAttribute("cy", yCoord);
-                    circle.setAttribute("r", Math.random() * 1.5 + 1.8);
+                    // Added a horizontal adjustment offset to perfectly center the word inside the SVG view
+                    circle.setAttribute("cx", pt[0] + 80);
+                    circle.setAttribute("cy", pt[1]);
+                    circle.setAttribute("r", Math.random() * 1.2 + 1.8);
                     circle.setAttribute("fill", "#ffffff");
-                    circle.setAttribute("style", `opacity: ${Math.random() * 0.4 + 0.6}; filter: drop-shadow(0 0 5px rgba(255,255,255,0.95));`);
+                    circle.setAttribute("style", `opacity: ${Math.random() * 0.3 + 0.7}; filter: drop-shadow(0 0 5px rgba(255,255,255,0.95));`);
                     starMap.appendChild(circle);
                 });
             });
 
-            // Fill empty background with scattered smaller cosmic dust stars
-            for(let i=0; i<45; i++) {
+            // Ambient background tiny star dust
+            for(let i=0; i<30; i++) {
                 const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                circle.setAttribute("cx", Math.random() * width);
-                circle.setAttribute("cy", Math.random() * 100);
-                circle.setAttribute("r", Math.random() * 1);
-                circle.setAttribute("fill", "rgba(255,255,255,0.4)");
+                circle.setAttribute("cx", Math.random() * 700);
+                circle.setAttribute("cy", Math.random() * 130);
+                circle.setAttribute("r", Math.random() * 0.8 + 0.4);
+                circle.setAttribute("fill", "rgba(255,255,255,0.35)");
                 starMap.appendChild(circle);
             }
         }
-        
         buildConstellation();
-        window.addEventListener('resize', buildConstellation);
 
         // 2. BOTANICAL GARDEN CANVAS ENGINE
         const canvas = document.getElementById('botanicalCanvas');
@@ -291,7 +279,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             const centerX = canvas.width / 2;
-            const startY = canvas.height; // Sets roots 100% at the very baseline bottom frame edge
+            const startY = canvas.height; 
             
             const maxCenterLen = 175;
             const currentCenterLen = maxCenterLen * botanicalProgress;
@@ -427,45 +415,35 @@
             ctx.shadowBlur = 0;
         }
 
-        // 3. FORCE DIRECTED REPOSITORY PATH AUDIO CONTROLLER
+        // 3. ABSOLUTE LIVE SERVER AUDIO RESOLVER
         function toggleMusic() {
             const music = document.getElementById('bg-music');
             const btn = document.querySelector('.music-btn');
             
             if (!animationStarted) {
                 animationStarted = true;
-                // Force load internal media stream relative to context folder
-                music.src = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/song.mp3';
+                // Force an absolute URL fetch to bypass local sub-pathing completely
+                music.src = "https://sibrangoodman.github.io/hbd/song.mp3";
                 music.load();
                 drawBotanicalScene();
             }
 
-            const playPromise = music.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    if (music.paused) {
-                        btn.innerHTML = "▶️ Play";
-                    } else {
-                        btn.innerHTML = "⏸️ Pause";
-                    }
+            if (music.paused) {
+                music.play().then(() => {
+                    btn.innerHTML = "⏸️ Pause";
                 }).catch(error => {
-                    // Fallback to try alternative double-extension path directly if primary path is cached out
-                    console.log("Primary track path failed, executing backup track stream layout...");
-                    music.src = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/song.mp3.mp3';
+                    console.log("Primary absolute path blocked, attempting raw double extension fallback...");
+                    music.src = "https://sibrangoodman.github.io/hbd/song.mp3.mp3";
+                    music.load();
                     music.play().then(() => {
                         btn.innerHTML = "⏸️ Pause";
                     }).catch(err => {
-                        btn.innerHTML = "⚠️ Clear Cache & Click Again";
+                        btn.innerHTML = "⚠️ Try on Another Browser";
                     });
                 });
-            }
-            
-            if (!music.paused && animationStarted) {
-                // If it's already playing, allow toggle to pause smoothly
-                if (btn.innerHTML === "⏸️ Pause") {
-                    music.pause();
-                    btn.innerHTML = "▶️ Play";
-                }
+            } else {
+                music.pause();
+                btn.innerHTML = "▶️ Play";
             }
         }
     </script>
