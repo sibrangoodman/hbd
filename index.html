@@ -20,9 +20,9 @@
             align-items: center;
             overflow: hidden;
             color: #ffffff;
+            padding: 20px;
         }
 
-        /* Ambient glow in the background */
         .bg-glow {
             position: absolute;
             width: 400px;
@@ -42,6 +42,8 @@
             flex-direction: column;
             align-items: center;
             gap: 15px;
+            width: 100%;
+            max-width: 900px;
         }
 
         h1 {
@@ -58,22 +60,53 @@
             text-shadow: 0 0 20px rgba(192, 132, 252, 0.4);
         }
 
-        p {
-            font-size: 1.1rem;
-            color: #9ca3af;
-            letter-spacing: 1px;
-            opacity: 0;
-            animation: fadeIn 2s ease-in forwards 1.8s;
-            margin-bottom: 10px;
+        /* Responsive Layout Grid for Flower + Note */
+        .content-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            margin-top: 10px;
         }
 
-        /* Canvas styling for the flower */
+        @media (min-width: 768px) {
+            .content-layout {
+                flex-direction: row;
+                align-items: center;
+                text-align: left;
+            }
+        }
+
+        /* Left side canvas container */
+        .canvas-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         canvas {
             background: transparent;
             display: block;
         }
 
-        /* Ambient, clean button */
+        /* Right side sweet note */
+        .side-note {
+            max-width: 300px;
+            font-size: 1.05rem;
+            color: #9ca3af;
+            line-height: 1.6;
+            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 2px solid #c084fc;
+            padding: 15px 20px;
+            border-radius: 0 12px 12px 0;
+            opacity: 0;
+            animation: fadeIn 2s ease-in forwards 2.5s;
+            text-align: left;
+        }
+
         .music-btn {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -107,9 +140,16 @@
 
     <div class="container">
         <h1>Happy Birthday <span class="highlight">Ms. Cool</span> 😉❤️</h1>
-        <p>A little digital bloom for you...</p>
 
-        <canvas id="flowerCanvas" width="400" height="350"></canvas>
+        <div class="content-layout">
+            <div class="canvas-area">
+                <canvas id="flowerCanvas" width="380" height="320"></canvas>
+            </div>
+            
+            <div class="side-note">
+                hey i dont use html thing so this is not as cool as i thought i would be but yayyyy its workin sooo good mornin noooo wait happy birthday 😂
+            </div>
+        </div>
 
         <audio id="bg-music" loop>
             <source src="song.mp3" type="audio/mpeg">
@@ -122,9 +162,8 @@
         const canvas = document.getElementById('flowerCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Animation state variables
         let stemHeight = 0;
-        const maxStemHeight = 160;
+        const maxStemHeight = 150;
         let bloomProgress = 0;
         let centerProgress = 0;
 
@@ -135,7 +174,7 @@
             const startY = canvas.height;
             const flowerY = startY - stemHeight;
 
-            // 1. Draw and Grow Stem
+            // 1. Draw Stem
             ctx.beginPath();
             ctx.moveTo(startX, startY);
             ctx.quadraticCurveTo(startX - 10, startY - (stemHeight / 2), startX, flowerY);
@@ -145,17 +184,17 @@
             ctx.shadowColor = '#14532d';
             ctx.shadowBlur = 5;
             ctx.stroke();
-            ctx.shadowBlur = 0; // reset shadow
+            ctx.shadowBlur = 0;
 
             if (stemHeight < maxStemHeight) {
-                stemHeight += 2; // Speed of stem growth
+                stemHeight += 2;
                 requestAnimationFrame(drawFlowerAnimation);
                 return;
             }
 
-            // 2. Bloom Petals (Triggers after stem finishes growing)
+            // 2. Bloom Petals
             const petalCount = 6;
-            const maxPetalRadius = 45;
+            const maxPetalRadius = 42;
             const currentRadius = maxPetalRadius * bloomProgress;
 
             ctx.save();
@@ -164,13 +203,11 @@
             for (let i = 0; i < petalCount; i++) {
                 ctx.rotate((Math.PI * 2) / petalCount);
                 
-                // Create glowing pink gradient for petals
                 let gradient = ctx.createRadialGradient(0, 0, 5, 0, -currentRadius, currentRadius);
                 gradient.addColorStop(0, '#f43f5e');
                 gradient.addColorStop(1, '#ec4899');
 
                 ctx.beginPath();
-                // Draw elegant, smooth organic loops for petals
                 ctx.moveTo(0, 0);
                 ctx.bezierCurveTo(-currentRadius/2, -currentRadius/2, -currentRadius/2, -currentRadius, 0, -currentRadius);
                 ctx.bezierCurveTo(currentRadius/2, -currentRadius, currentRadius/2, -currentRadius/2, 0, 0);
@@ -184,13 +221,13 @@
             ctx.shadowBlur = 0;
 
             if (bloomProgress < 1) {
-                bloomProgress += 0.012; // Speed of petal bloom
+                bloomProgress += 0.012;
                 requestAnimationFrame(drawFlowerAnimation);
                 return;
             }
 
-            // 3. Reveal Golden Center (Triggers after petals bloom)
-            const maxCenterRadius = 14;
+            // 3. Center
+            const maxCenterRadius = 13;
             const currentCenterRadius = maxCenterRadius * centerProgress;
 
             ctx.beginPath();
@@ -202,12 +239,11 @@
             ctx.shadowBlur = 0;
 
             if (centerProgress < 1) {
-                centerProgress += 0.03; // Speed of center reveal
+                centerProgress += 0.03;
                 requestAnimationFrame(drawFlowerAnimation);
             }
         }
 
-        // Handle Audio and start the drawing flow on user tap
         let interactionStarted = false;
         function toggleMusic() {
             const music = document.getElementById('bg-music');
@@ -215,12 +251,11 @@
             
             if (!interactionStarted) {
                 interactionStarted = true;
-                // Starts the canvas animation loop on the very first click
                 drawFlowerAnimation();
             }
 
             if (music.paused) {
-                music.play().catch(err => console.log("Audio play blocked: requires interaction"));
+                music.play().catch(err => console.log("Audio require interaction"));
                 btn.innerHTML = "⏸️ Pause the vibe";
             } else {
                 music.pause();
