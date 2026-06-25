@@ -11,23 +11,25 @@
             box-sizing: border-box;
         }
         body {
-            background-color: #0b0b0f;
+            background-color: #050507;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto; /* Allows scrolling if needed on small screens */
             color: #ffffff;
-            padding: 20px;
+            padding: 10px;
         }
 
+        /* Dark ambient glow in the background */
         .bg-glow {
             position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(0,0,0,0) 70%);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, rgba(0,0,0,0) 80%);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -41,9 +43,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
         }
 
         h1 {
@@ -52,81 +54,86 @@
             letter-spacing: 2px;
             opacity: 0;
             animation: fadeIn 2s ease-in forwards 0.5s;
+            margin-bottom: 5px;
         }
 
         .highlight {
-            color: #c084fc;
+            color: #d1aaff;
             font-weight: 600;
-            text-shadow: 0 0 20px rgba(192, 132, 252, 0.4);
+            text-shadow: 0 0 25px rgba(209, 170, 255, 0.4);
         }
 
-        /* Responsive Layout Grid for Flower + Note */
-        .content-layout {
+        /* Layout for the botanical scene */
+        .botanical-scene {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             width: 100%;
-            margin-top: 10px;
         }
 
-        @media (min-width: 768px) {
-            .content-layout {
+        @media (min-width: 900px) {
+            .botanical-scene {
                 flex-direction: row;
-                align-items: center;
+                align-items: flex-start;
                 text-align: left;
             }
         }
 
-        /* Left side canvas container */
+        /* Canvas container and scaling for mobile */
         .canvas-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            height: 480px;
+            margin: 0 auto;
         }
 
         canvas {
-            background: transparent;
+            width: 100%;
+            height: 100%;
             display: block;
         }
 
-        /* Right side sweet note */
-        .side-note {
-            max-width: 300px;
-            font-size: 1.05rem;
-            color: #9ca3af;
-            line-height: 1.6;
+        /* Sweet, sincere note on the side */
+        .sincere-note {
+            max-width: 320px;
+            font-size: 1.1rem;
+            color: #d1d5db;
+            line-height: 1.7;
             letter-spacing: 0.5px;
-            background: rgba(255, 255, 255, 0.02);
-            border-left: 2px solid #c084fc;
-            padding: 15px 20px;
-            border-radius: 0 12px 12px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 2px solid #818cf8; /* Deep indigo border */
+            padding: 20px 25px;
+            border-radius: 0 16px 16px 0;
             opacity: 0;
-            animation: fadeIn 2s ease-in forwards 2.5s;
+            animation: fadeIn 2s ease-in forwards 3s; /* Delay for flower bloom */
             text-align: left;
+            margin-top: 20px;
         }
 
         .music-btn {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 12px 28px;
+            padding: 14px 30px;
             color: #fff;
-            border-radius: 30px;
+            border-radius: 40px;
             cursor: pointer;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            margin-top: 15px;
+            font-size: 0.95rem;
+            letter-spacing: 1.5px;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-top: 25px;
             outline: none;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
+            z-index: 20;
         }
 
         .music-btn:hover {
             background: #ffffff;
-            color: #0b0b0f;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-            transform: translateY(-2px);
+            color: #050507;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+            transform: translateY(-3px) scale(1.02);
         }
 
         @keyframes fadeIn {
@@ -141,13 +148,13 @@
     <div class="container">
         <h1>Happy Birthday <span class="highlight">Ms. Cool</span> 😉❤️</h1>
 
-        <div class="content-layout">
+        <div class="botanical-scene">
             <div class="canvas-area">
-                <canvas id="flowerCanvas" width="380" height="320"></canvas>
+                <canvas id="botanicalCanvas" width="500" height="500"></canvas>
             </div>
             
-            <div class="side-note">
-                hey i dont use html thing so this is not as cool as i thought i would be but yayyyy its workin sooo good mornin noooo wait happy birthday 😂
+            <div class="sincere-note">
+                honestly i don't really do the html coding thing, so this is about as smooth as my digital artistry gets... but i’m really glad it worked. hope you like your personalized bloom 
             </div>
         </div>
 
@@ -155,111 +162,186 @@
             <source src="song.mp3" type="audio/mpeg">
         </audio>
 
-        <button class="music-btn" onclick="toggleMusic()">🎵 Tap for the vibe</button>
+        <button class="music-btn" onclick="toggleMusic()">🎵 ACTIVATE VIBE</button>
     </div>
 
     <script>
-        const canvas = document.getElementById('flowerCanvas');
+        const canvas = document.getElementById('botanicalCanvas');
         const ctx = canvas.getContext('2d');
 
-        let stemHeight = 0;
-        const maxStemHeight = 150;
+        // Animation State Management
+        let animationStarted = false;
+        let botanicalProgress = 0;
         let bloomProgress = 0;
-        let centerProgress = 0;
+        let detailProgress = 0;
 
-        function drawFlowerAnimation() {
+        function drawBotanicalScene() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            const startX = canvas.width / 2;
-            const startY = canvas.height;
-            const flowerY = startY - stemHeight;
+            // Central starting point (scaled based on progress)
+            const centerX = canvas.width / 2;
+            const startY = canvas.height * 0.9;
+            const vineLength = 200 * botanicalProgress;
 
-            // 1. Draw Stem
-            ctx.beginPath();
-            ctx.moveTo(startX, startY);
-            ctx.quadraticCurveTo(startX - 10, startY - (stemHeight / 2), startX, flowerY);
-            ctx.strokeStyle = '#22c55e';
-            ctx.lineWidth = 4;
-            ctx.lineCap = 'round';
-            ctx.shadowColor = '#14532d';
-            ctx.shadowBlur = 5;
-            ctx.stroke();
-            ctx.shadowBlur = 0;
+            // 1. Draw Main Sprawling Vines/Stems
+            ctx.shadowColor = '#064e3b';
+            ctx.shadowBlur = 8;
+            
+            // Central main stem
+            drawVine(startX, startY, centerX, startY - vineLength, '#22c55e', 4);
+            
+            // Branching vines
+            if (botanicalProgress > 0.4) {
+                const p = (botanicalProgress - 0.4) / 0.6;
+                drawVine(startX, startY - 50, startX + (80 * p), startY - 50 - (100 * p), '#166534', 3);
+                drawVine(startX, startY - 80, startX - (80 * p), startY - 80 - (100 * p), '#166534', 3);
+            }
+            ctx.shadowBlur = 0; // Reset shadow
 
-            if (stemHeight < maxStemHeight) {
-                stemHeight += 2;
-                requestAnimationFrame(drawFlowerAnimation);
+            // Control overall flow
+            if (botanicalProgress < 1) {
+                botanicalProgress += 0.015;
+                requestAnimationFrame(drawBotanicalScene);
                 return;
             }
 
-            // 2. Bloom Petals
-            const petalCount = 6;
-            const maxPetalRadius = 42;
-            const currentRadius = maxPetalRadius * bloomProgress;
+            // 2. Draw Leaves
+            drawLeaves(startX, startY, vineLength);
 
-            ctx.save();
-            ctx.translate(startX, flowerY);
+            // 3. Draw Red/Pink Flower Blooms
+            const maxRadius = 40;
+            const baseFlowerY = startY - vineLength;
             
-            for (let i = 0; i < petalCount; i++) {
-                ctx.rotate((Math.PI * 2) / petalCount);
-                
-                let gradient = ctx.createRadialGradient(0, 0, 5, 0, -currentRadius, currentRadius);
-                gradient.addColorStop(0, '#f43f5e');
-                gradient.addColorStop(1, '#ec4899');
+            // Main Central Bloom (Red)
+            drawFlower(startX, baseFlowerY, maxRadius * bloomProgress, '#ef4444', '#b91c1c');
 
-                ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.bezierCurveTo(-currentRadius/2, -currentRadius/2, -currentRadius/2, -currentRadius, 0, -currentRadius);
-                ctx.bezierCurveTo(currentRadius/2, -currentRadius, currentRadius/2, -currentRadius/2, 0, 0);
-                
-                ctx.fillStyle = gradient;
-                ctx.shadowColor = 'rgba(236, 72, 153, 0.3)';
-                ctx.shadowBlur = 15;
-                ctx.fill();
+            // Side Blooms (Pink)
+            if (bloomProgress > 0.5) {
+                const sideP = (bloomProgress - 0.5) / 0.5;
+                drawFlower(startX + 80, startY - 150, (maxRadius * 0.7) * sideP, '#f472b6', '#db2777');
+                drawFlower(startX - 80, startY - 180, (maxRadius * 0.7) * sideP, '#f472b6', '#db2777');
             }
-            ctx.restore();
-            ctx.shadowBlur = 0;
 
             if (bloomProgress < 1) {
                 bloomProgress += 0.012;
-                requestAnimationFrame(drawFlowerAnimation);
+                requestAnimationFrame(drawBotanicalScene);
                 return;
             }
 
-            // 3. Center
-            const maxCenterRadius = 13;
-            const currentCenterRadius = maxCenterRadius * centerProgress;
+            // 4. Draw Pistils/Pollen Details
+            if (bloomProgress >= 1) {
+                drawFlowerPistil(startX, baseFlowerY, 12 * detailProgress);
+                drawFlowerPistil(startX + 80, startY - 150, 9 * detailProgress);
+                drawFlowerPistil(startX - 80, startY - 180, 9 * detailProgress);
 
+                if (detailProgress < 1) {
+                    detailProgress += 0.02;
+                    requestAnimationFrame(drawBotanicalScene);
+                }
+            }
+        }
+
+        // --- Helpler Functions for Drawing ---
+
+        function drawVine(x1, y1, x2, y2, color, width) {
             ctx.beginPath();
-            ctx.arc(startX, flowerY, currentCenterRadius, 0, Math.PI * 2);
-            ctx.fillStyle = '#facc15';
+            ctx.moveTo(x1, y1);
+            // Sprawling curve
+            ctx.quadraticCurveTo((x1 + x2) / 2 - 20, (y1 + y2) / 2, x2, y2);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+        }
+
+        function drawLeaves(x, y, totalLen) {
+            ctx.fillStyle = '#15803d'; // Rich forest green
+            ctx.strokeStyle = '#22c55e'; // Highlight green
+            ctx.lineWidth = 1;
+
+            for (let i = 2; i < 15; i++) {
+                // Determine leaf position along central vine
+                const ratio = i / 15;
+                const leafY = y - (totalLen * ratio);
+                const leafX = x + (i % 2 === 0 ? 10 : -10) * botanicalProgress;
+
+                if (i % 2 === 0) { // Leaves on right side
+                    drawOrganicLeaf(leafX, leafY, 20 * botanicalProgress, 45);
+                } else { // Leaves on left side
+                    drawOrganicLeaf(leafX, leafY, 20 * botanicalProgress, -45);
+                }
+            }
+        }
+
+        function drawOrganicLeaf(x, y, radius, angle) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle * (Math.PI / 180));
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            // Leaf shape bezier
+            ctx.bezierCurveTo(radius/2, radius/2, radius, radius, 0, radius);
+            ctx.bezierCurveTo(-radius, radius, -radius/2, radius/2, 0, 0);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawFlower(x, y, radius, primary, secondary) {
+            const petals = 6;
+            ctx.save();
+            ctx.translate(x, y);
+            
+            for (let i = 0; i < petals; i++) {
+                ctx.rotate((Math.PI * 2) / petals);
+                
+                let gradient = ctx.createRadialGradient(0, 0, 5, 0, -radius, radius);
+                gradient.addColorStop(0, primary);
+                gradient.addColorStop(1, secondary);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                // Petal loop
+                ctx.bezierCurveTo(-radius/1.5, -radius/1.5, -radius/1.5, -radius, 0, -radius);
+                ctx.bezierCurveTo(radius/1.5, -radius, radius/1.5, -radius/1.5, 0, 0);
+                
+                ctx.fillStyle = gradient;
+                ctx.shadowColor = 'rgba(239, 68, 68, 0.2)';
+                ctx.shadowBlur = 10;
+                ctx.fill();
+            }
+            ctx.restore();
+            ctx.shadowBlur = 0; // reset shadow
+        }
+
+        function drawFlowerPistil(x, y, radius) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#facc15'; // Golden yellow
             ctx.shadowColor = '#eab308';
             ctx.shadowBlur = 10;
             ctx.fill();
             ctx.shadowBlur = 0;
-
-            if (centerProgress < 1) {
-                centerProgress += 0.03;
-                requestAnimationFrame(drawFlowerAnimation);
-            }
         }
 
-        let interactionStarted = false;
+        // --- Interaction Control ---
+
         function toggleMusic() {
             const music = document.getElementById('bg-music');
             const btn = document.querySelector('.music-btn');
             
-            if (!interactionStarted) {
-                interactionStarted = true;
-                drawFlowerAnimation();
+            if (!animationStarted) {
+                animationStarted = true;
+                // Start drawing when user interacts
+                drawBotanicalScene();
             }
 
             if (music.paused) {
-                music.play().catch(err => console.log("Audio require interaction"));
-                btn.innerHTML = "⏸️ Pause the vibe";
+                music.play().catch(err => console.log("Audio requires interaction"));
+                btn.innerHTML = "⏸️ PAUSE VIBE";
             } else {
                 music.pause();
-                btn.innerHTML = "🎵 Tap for the vibe";
+                btn.innerHTML = "🎵 ACTIVATE VIBE";
             }
         }
     </script>
