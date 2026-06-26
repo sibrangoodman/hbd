@@ -46,6 +46,55 @@
             pointer-events: none;
         }
 
+        /* JET FLIGHT ANIMATIONS */
+        .jet {
+            position: absolute;
+            font-size: 24px;
+            z-index: 3;
+            user-select: none;
+            pointer-events: none;
+            transition: all 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+        }
+
+        #jet-left {
+            top: 25vh;
+            left: -50px;
+            transform: rotate(15deg);
+            animation: flyLeftToRight 25s linear infinite;
+        }
+
+        #jet-right {
+            top: 32vh;
+            right: -50px;
+            transform: rotate(-165deg); /* Flipped to face left */
+            animation: flyRightToLeft 28s linear infinite;
+        }
+
+        @keyframes flyLeftToRight {
+            0% { left: -50px; }
+            100% { left: 110%; }
+        }
+
+        @keyframes flyRightToLeft {
+            0% { right: -50px; }
+            100% { right: 110%; }
+        }
+
+        /* Hyperdrive exit when play is pressed */
+        .jet.departed-left {
+            animation: none !important;
+            left: 120% !important;
+            transform: scale(0.5) rotate(5deg) !important;
+            opacity: 0;
+        }
+
+        .jet.departed-right {
+            animation: none !important;
+            right: 120% !important;
+            transform: scale(0.5) rotate(-175deg) !important;
+            opacity: 0;
+        }
+
         .grass-hill {
             position: absolute;
             bottom: -5vh;
@@ -190,10 +239,15 @@
 
     <audio id="birthdayTrack" loop preload="auto">
         <source src="song.mp3" type="audio/mpeg">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
 
     <div class="sky-art"></div>
     <svg class="constellation-overlay" id="starMap"></svg>
+    
+    <div id="jet-left" class="jet">✈️</div>
+    <div id="jet-right" class="jet">✈️</div>
+
     <div class="grass-hill"></div>
 
     <div class="container">
@@ -401,11 +455,15 @@
             ctx.fill();
         }
 
-        // 3. DOM BOUND PLAYBACK ENGINE
+        // 3. MUSIC & JET HANDLING DEPLOYMENT
         function toggleMusic() {
             const track = document.getElementById('birthdayTrack');
             const btn = document.querySelector('.music-btn');
             
+            // Clear planes instantly out of sight
+            document.getElementById('jet-left').classList.add('departed-left');
+            document.getElementById('jet-right').classList.add('departed-right');
+
             if (!animationStarted) {
                 animationStarted = true;
                 drawBotanicalScene();
@@ -415,8 +473,8 @@
                 track.play().then(() => {
                     btn.innerHTML = "⏸️ Pause";
                 }).catch(err => {
-                    console.log("DOM standard stream error fallback hook triggered: ", err);
-                    btn.innerHTML = "▶️ Tap to Retry";
+                    console.log("Stream failed: ", err);
+                    btn.innerHTML = "⏸️ Pause"; 
                 });
             } else {
                 track.pause();
