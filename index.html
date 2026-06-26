@@ -46,7 +46,6 @@
             pointer-events: none;
         }
 
-        /* MAJESTIC, SLOWER TWIN JETS */
         .jet {
             position: absolute;
             font-size: 42px; 
@@ -84,7 +83,6 @@
             100% { right: 115%; opacity: 0; transform: rotate(-175deg) scale(0.7); }
         }
 
-        /* FIXED: FULL-SCREEN LEAF SYSTEM */
         .leaf-container {
             position: absolute;
             top: 0;
@@ -102,6 +100,7 @@
             pointer-events: none;
             user-select: none;
             opacity: 0.8;
+            will-change: transform, opacity; /* Tells browser to hardware accelerate leaves */
             animation: fall linear infinite;
         }
 
@@ -118,7 +117,6 @@
             }
         }
 
-        /* FALLING LYRICS ELEMENT */
         .falling-lyric {
             position: absolute;
             font-size: 1.15rem;
@@ -129,6 +127,7 @@
             pointer-events: none;
             z-index: 20;
             transform: translateX(-50%);
+            will-change: top, opacity;
             animation: dropLyric 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
@@ -298,7 +297,7 @@
 </head>
 <body>
 
-    <audio id="birthdayTrack" loop preload="auto">
+    <audio id="birthdayTrack" loop preload="auto" crossorigin="anonymous">
         <source src="https://files.catbox.moe/j8gedr.mp3" type="audio/mpeg">
     </audio>
 
@@ -380,46 +379,47 @@
         drawSkyElements();
         window.addEventListener('resize', drawSkyElements);
 
-        // 2. FIXED: LEAVES DISTRIBUTED ACROSS WHOLE SCREEN WIDTH
+        // 2. OPTIMIZED FULL-SCREEN LEAF ENGINE
         const leafContainer = document.getElementById('leafContainer');
         const leafTypes = ['🍃', '🌸', '🍁', '🌱', '🌹', '🍂'];
         
         function spawnLeaf() {
+            // Memory check: don't spawn if tab is clogged up
+            if (document.hidden) return;
+
             const leaf = document.createElement('div');
             leaf.className = 'leaf';
             leaf.innerText = leafTypes[Math.floor(Math.random() * leafTypes.length)];
             
-            // Randomize birth point over full screen width
             leaf.style.left = Math.random() * 100 + 'vw';
-            leaf.style.fontSize = Math.random() * 12 + 15 + 'px';
+            leaf.style.fontSize = Math.random() * 10 + 14 + 'px';
             
-            // Dynamic path transformations for randomized side drift
-            const driftX = (Math.random() * 260 - 130) + 'px';
-            const rotation = (Math.random() * 500 + 360) + 'deg';
+            const driftX = (Math.random() * 240 - 120) + 'px';
+            const rotation = (Math.random() * 400 + 360) + 'deg';
             leaf.style.setProperty('--drift-x', driftX);
             leaf.style.setProperty('--rotation', rotation);
             
-            const duration = Math.random() * 4 + 6; // Balanced fall speeds
+            const duration = Math.random() * 4 + 7; 
             leaf.style.animationDuration = duration + 's';
             
             leafContainer.appendChild(leaf);
             setTimeout(() => leaf.remove(), duration * 1000);
         }
 
-        // 3. FIXED: ANTI-LAG TIMINGS FOR "SOMETHIN' STUPID" (Shifted early)
+        // 3. LYRICS TIMELINES WITH ADJUSTED OFFSETS FOR ABSOLUTE PLAYBACK HIGH STABILITY
         const lyricsTimeline = [
-            { time: 11.8, text: "I know I stand in line until you think you have the time" },
-            { time: 15.8, text: "To spend an evening with me" },
-            { time: 19.2, text: "And if we go someplace to dance, I know that there's a chance" },
-            { time: 23.8, text: "You won't be leaving with me" },
-            { time: 27.8, text: "Then afterwards we drop into a quiet little place" },
-            { time: 31.2, text: "And have a drink or two" },
-            { time: 35.2, text: "And then I go and spoil it all by saying something stupid" },
-            { time: 39.8, text: "Like: \"I love you\"" },
-            { time: 44.2, text: "I can see it in your eyes that you despise the same old lines" },
-            { time: 48.8, text: "You heard the night before" },
-            { time: 52.2, text: "And though it's just a line to you, for me it's true" },
-            { time: 56.2, text: "And never seemed so right before" }
+            { time: 11.2, text: "I know I stand in line until you think you have the time" },
+            { time: 15.2, text: "To spend an evening with me" },
+            { time: 18.6, text: "And if we go someplace to dance, I know that there's a chance" },
+            { time: 23.2, text: "You won't be leaving with me" },
+            { time: 27.2, text: "Then afterwards we drop into a quiet little place" },
+            { time: 30.6, text: "And have a drink or two" },
+            { time: 34.6, text: "And then I go and spoil it all by saying something stupid" },
+            { time: 39.2, text: "Like: \"I love you\"" },
+            { time: 43.6, text: "I can see it in your eyes that you despise the same old lines" },
+            { time: 48.2, text: "You heard the night before" },
+            { time: 51.6, text: "And though it's just a line to you, for me it's true" },
+            { time: 55.6, text: "And never seemed so right before" }
         ];
 
         let lastTriggeredLyric = -1;
@@ -578,12 +578,9 @@
             ctx.fill();
         }
 
-        // 5. RUNTIME CONTROLS
+        // 5. OPTIMIZED RUNTIME CLOCK THROTTLING
         const track = document.getElementById('birthdayTrack');
-        
-        track.addEventListener('timeupdate', () => {
-            checkLyricsSync(track.currentTime);
-        });
+        let syncInterval = null;
 
         function toggleMusic() {
             const btn = document.querySelector('.music-btn');
@@ -594,8 +591,8 @@
                 document.getElementById('jet-left').classList.add('launch-left');
                 document.getElementById('jet-right').classList.add('launch-right');
                 
-                // Spawn items regularly across the full container canvas layout
-                setInterval(spawnLeaf, 280); 
+                // Slightly slowed down rate to free up CPU processing threads
+                setInterval(spawnLeaf, 380); 
                 
                 drawBotanicalScene();
             }
@@ -603,11 +600,16 @@
             if (track.paused) {
                 track.play().then(() => {
                     btn.innerHTML = "⏸️ PAUSE";
+                    // Throttled time tracker: runs smoothly every 250ms instead of every single frame
+                    syncInterval = setInterval(() => {
+                        checkLyricsSync(track.currentTime);
+                    }, 250);
                 }).catch(err => {
                     btn.innerHTML = "⏸️ PAUSE";
                 });
             } else {
                 track.pause();
+                clearInterval(syncInterval);
                 btn.innerHTML = "🎵 PLAY";
             }
         }
