@@ -46,41 +46,96 @@
             pointer-events: none;
         }
 
-        .jet {
+        /* JET & BANNER HOLDER */
+        .jet-wrapper {
             position: absolute;
-            font-size: 42px; 
+            display: flex;
+            align-items: center;
             z-index: 3;
             user-select: none;
             pointer-events: none;
             opacity: 0;
         }
 
+        .jet-emoji {
+            font-size: 42px;
+            display: inline-block;
+        }
+
+        /* TOWED SIGN/BANNER */
+        .jet-banner {
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            color: #d1aaff;
+            background: rgba(209, 170, 255, 0.07);
+            padding: 5px 14px;
+            border: 1px dashed rgba(209, 170, 255, 0.4);
+            border-radius: 4px;
+            white-space: nowrap;
+            text-shadow: 0 0 8px rgba(209, 170, 255, 0.6);
+            box-shadow: 0 0 15px rgba(209, 170, 255, 0.1);
+            position: relative;
+        }
+
+        /* Tow lines connecting jet tail to banner */
+        .jet-banner::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 1px;
+            background: rgba(209, 170, 255, 0.4);
+        }
+
+        /* LEFT JET CONFIG (Flying Left to Right) */
         .launch-left {
             opacity: 1;
             top: 22vh;
-            transform: rotate(12deg);
             animation: flyLeftToRight 18s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
         }
+        .launch-left .jet-emoji {
+            transform: rotate(12deg);
+        }
+        .launch-left .jet-banner {
+            order: -1; /* Puts banner behind the jet */
+            margin-right: 20px;
+            transform: rotate(6deg);
+        }
+        .launch-left .jet-banner::before {
+            right: -21px;
+        }
 
+        /* RIGHT JET CONFIG (Flying Right to Left) */
         .launch-right {
             opacity: 1;
-            top: 30vh;
-            transform: rotate(-168deg);
+            top: 32vh;
             animation: flyRightToLeft 18.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
+        }
+        .launch-right .jet-emoji {
+            transform: rotate(-168deg);
+        }
+        .launch-right .jet-banner {
+            order: 1; /* Puts banner behind the jet on reverse flight */
+            margin-left: 20px;
+            transform: rotate(-174deg);
+        }
+        .launch-right .jet-banner::before {
+            left: -21px;
         }
 
         @keyframes flyLeftToRight {
-            0% { left: -80px; transform: rotate(12deg) scale(0.9); }
+            0% { left: -250px; transform: scale(0.9); }
             10% { opacity: 1; }
             90% { opacity: 1; }
-            100% { left: 115%; opacity: 0; transform: rotate(5deg) scale(0.7); }
+            100% { left: 120%; opacity: 0; transform: scale(0.7); }
         }
 
         @keyframes flyRightToLeft {
-            0% { right: -80px; transform: rotate(-168deg) scale(0.9); }
+            0% { right: -250px; transform: scale(0.9); }
             10% { opacity: 1; }
             90% { opacity: 1; }
-            100% { right: 115%; opacity: 0; transform: rotate(-175deg) scale(0.7); }
+            100% { right: 120%; opacity: 0; transform: scale(0.7); }
         }
 
         .leaf-container {
@@ -114,43 +169,6 @@
             100% {
                 transform: translateY(110vh) translateX(var(--drift-x)) rotate(var(--rotation));
                 opacity: 0;
-            }
-        }
-
-        .falling-lyric {
-            position: absolute;
-            font-size: 1.15rem;
-            font-weight: 300;
-            color: rgba(209, 170, 255, 0.95);
-            text-shadow: 0 0 12px rgba(209, 170, 255, 0.4);
-            white-space: nowrap;
-            pointer-events: none;
-            z-index: 20;
-            transform: translateX(-50%);
-            will-change: top, opacity;
-            animation: dropLyric 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
-        @keyframes dropLyric {
-            0% {
-                top: 52vh;
-                opacity: 0;
-                transform: translateX(-50%) scale(0.7);
-                filter: blur(4px);
-            }
-            12% {
-                opacity: 1;
-                transform: translateX(-50%) scale(1);
-                filter: blur(0px);
-            }
-            80% {
-                opacity: 0.8;
-            }
-            100% {
-                top: 85vh;
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-                filter: blur(2px);
             }
         }
 
@@ -287,7 +305,6 @@
             .right-note { order: 3; border-bottom-color: #a855f7; }
             .controls-area { height: auto; margin-top: 20px; }
             .grass-hill { height: 150px; bottom: -20px; }
-            .falling-lyric { font-size: 1rem; }
         }
 
         @keyframes fadeIn {
@@ -298,6 +315,7 @@
 <body>
 
     <audio id="birthdayTrack" loop preload="auto" crossorigin="anonymous">
+        <source src="https://archive.org/download/somethin-stupid-nancy-frank-sinatra/Somethin%27%20Stupid%20-%20Nancy%20%26%20Frank%20Sinatra.mp3" type="audio/mpeg">
         <source src="https://files.catbox.moe/j8gedr.mp3" type="audio/mpeg">
     </audio>
 
@@ -305,8 +323,16 @@
     <svg class="constellation-overlay" id="starMap"></svg>
     <div class="leaf-container" id="leafContainer"></div>
     
-    <div id="jet-left" class="jet">✈️</div>
-    <div id="jet-right" class="jet">✈️</div>
+    <!-- WRAPPERS FOR JET + TRAILING SIGN -->
+    <div id="jet-left" class="jet-wrapper">
+        <div class="jet-emoji">✈️</div>
+        <div class="jet-banner">Cap z</div>
+    </div>
+    
+    <div id="jet-right" class="jet-wrapper">
+        <div class="jet-emoji">✈️</div>
+        <div class="jet-banner">Cap z</div>
+    </div>
 
     <div class="grass-hill"></div>
 
@@ -405,46 +431,7 @@
             setTimeout(() => leaf.remove(), duration * 1000);
         }
 
-        // 3. RESTORED ORIGINAL TIMINGS FOR "SOMETHIN' STUPID"
-        const lyricsTimeline = [
-            { time: 13.5, text: "I know I stand in line until you think you have the time" },
-            { time: 17.5, text: "To spend an evening with me" },
-            { time: 21.0, text: "And if we go someplace to dance, I know that there's a chance" },
-            { time: 25.5, text: "You won't be leaving with me" },
-            { time: 29.5, text: "Then afterwards we drop into a quiet little place" },
-            { time: 33.0, text: "And have a drink or two" },
-            { time: 37.0, text: "And then I go and spoil it all by saying something stupid" },
-            { time: 41.5, text: "Like: \"I love you\"" },
-            { time: 46.0, text: "I can see it in your eyes that you despise the same old lines" },
-            { time: 50.5, text: "You heard the night before" },
-            { time: 54.0, text: "And though it's just a line to you, for me it's true" },
-            { time: 58.0, text: "And never seemed so right before" }
-        ];
-
-        let lastTriggeredLyric = -1;
-
-        function checkLyricsSync(currentTime) {
-            for (let i = 0; i < lyricsTimeline.length; i++) {
-                if (currentTime >= lyricsTimeline[i].time && lastTriggeredLyric < i) {
-                    if (i > lastTriggeredLyric) {
-                        lastTriggeredLyric = i;
-                        dropLyricFromFlower(lyricsTimeline[i].text);
-                    }
-                }
-            }
-        }
-
-        function dropLyricFromFlower(text) {
-            const lyricEl = document.createElement('div');
-            lyricEl.className = 'falling-lyric';
-            lyricEl.innerText = text;
-            lyricEl.style.left = '50%';
-            
-            document.body.appendChild(lyricEl);
-            setTimeout(() => lyricEl.remove(), 6500);
-        }
-
-        // 4. BOTANICAL GARDEN CANVAS ENGINE
+        // 3. BOTANICAL GARDEN CANVAS ENGINE
         const canvas = document.getElementById('botanicalCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -577,9 +564,8 @@
             ctx.fill();
         }
 
-        // 5. RUNTIME CONTROLS
+        // 4. RUNTIME CONTROLS
         const track = document.getElementById('birthdayTrack');
-        let syncInterval = null;
 
         function toggleMusic() {
             const btn = document.querySelector('.music-btn');
@@ -587,26 +573,22 @@
             if (!animationStarted) {
                 animationStarted = true;
                 
+                // Launch wrapper sets carrying the "Cap z" signs
                 document.getElementById('jet-left').classList.add('launch-left');
                 document.getElementById('jet-right').classList.add('launch-right');
                 
                 setInterval(spawnLeaf, 380); 
-                
                 drawBotanicalScene();
             }
 
             if (track.paused) {
                 track.play().then(() => {
                     btn.innerHTML = "⏸️ PAUSE";
-                    syncInterval = setInterval(() => {
-                        checkLyricsSync(track.currentTime);
-                    }, 250);
                 }).catch(err => {
                     btn.innerHTML = "⏸️ PAUSE";
                 });
             } else {
                 track.pause();
-                clearInterval(syncInterval);
                 btn.innerHTML = "🎵 PLAY";
             }
         }
