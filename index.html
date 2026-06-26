@@ -84,6 +84,75 @@
             100% { right: 115%; opacity: 0; transform: rotate(-175deg) scale(0.7); }
         }
 
+        /* FALLING LEAF SYSTEM */
+        .leaf-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .leaf {
+            position: absolute;
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-20px) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% {
+                transform: translateY(105vh) translateX(120px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* FALLING LYRICS ELEMENT */
+        .falling-lyric {
+            position: absolute;
+            font-size: 1.15rem;
+            font-weight: 300;
+            color: rgba(209, 170, 255, 0.95);
+            text-shadow: 0 0 12px rgba(209, 170, 255, 0.4);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 20;
+            transform: translateX(-50%);
+            animation: dropLyric 7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes dropLyric {
+            0% {
+                top: 55vh; /* Spawns directly around the top of the flower scene */
+                opacity: 0;
+                transform: translateX(-50%) scale(0.7);
+                filter: blur(4px);
+            }
+            15% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+                filter: blur(0px);
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                top: 88vh; /* Falls down toward the hill and disappears */
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+                filter: blur(2px);
+            }
+        }
+
         .grass-hill {
             position: absolute;
             bottom: -5vh;
@@ -217,6 +286,7 @@
             .right-note { order: 3; border-bottom-color: #a855f7; }
             .controls-area { height: auto; margin-top: 20px; }
             .grass-hill { height: 150px; bottom: -20px; }
+            .falling-lyric { font-size: 1rem; }
         }
 
         @keyframes fadeIn {
@@ -232,6 +302,7 @@
 
     <div class="sky-art"></div>
     <svg class="constellation-overlay" id="starMap"></svg>
+    <div class="leaf-container" id="leafContainer"></div>
     
     <div id="jet-left" class="jet">✈️</div>
     <div id="jet-right" class="jet">✈️</div>
@@ -307,7 +378,67 @@
         drawSkyElements();
         window.addEventListener('resize', drawSkyElements);
 
-        // 2. BOTANICAL GARDEN CANVAS ENGINE
+        // 2. FALLING LEAVES ENGINE
+        const leafContainer = document.getElementById('leafContainer');
+        const leafTypes = ['🍃', '🌸', '🍁', '🌱'];
+        
+        function spawnLeaf() {
+            const leaf = document.createElement('div');
+            leaf.className = 'leaf';
+            leaf.innerText = leafTypes[Math.floor(Math.random() * leafTypes.length)];
+            leaf.style.left = Math.random() * 100 + 'vw';
+            leaf.style.fontSize = Math.random() * 12 + 14 + 'px';
+            
+            const duration = Math.random() * 5 + 7;
+            leaf.style.animationDuration = duration + 's';
+            
+            leafContainer.appendChild(leaf);
+            setTimeout(() => leaf.remove(), duration * 1000);
+        }
+
+        // 3. SYNCED LYRICS CONFIGURATION FOR "SOMETHIN' STUPID"
+        const lyricsTimeline = [
+            { time: 13.5, text: "I know I stand in line until you think you have the time" },
+            { time: 17.5, text: "To spend an evening with me" },
+            { time: 21.0, text: "And if we go someplace to dance, I know that there's a chance" },
+            { time: 25.5, text: "You won't be leaving with me" },
+            { time: 29.5, text: "Then afterwards we drop into a quiet little place" },
+            { time: 33.0, text: "And have a drink or two" },
+            { time: 37.0, text: "And then I go and spoil it all by saying something stupid" },
+            { time: 41.5, text: "Like: \"I love you\"" },
+            { time: 46.0, text: "I can see it in your eyes that you despise the same old lines" },
+            { time: 50.5, text: "You heard the night before" },
+            { time: 54.0, text: "And though it's just a line to you, for me it's true" },
+            { time: 58.0, text: "And never seemed so right before" }
+        ];
+
+        let lastTriggeredLyric = -1;
+
+        function checkLyricsSync(currentTime) {
+            for (let i = 0; i < lyricsTimeline.length; i++) {
+                if (currentTime >= lyricsTimeline[i].time && lastTriggeredLyric < i) {
+                    // Only trigger if it hasn't been cast for this block yet
+                    if (i > lastTriggeredLyric) {
+                        lastTriggeredLyric = i;
+                        dropLyricFromFlower(lyricsTimeline[i].text);
+                    }
+                }
+            }
+        }
+
+        function dropLyricFromFlower(text) {
+            const lyricEl = document.createElement('div');
+            lyricEl.className = 'falling-lyric';
+            lyricEl.innerText = text;
+            
+            // Positions perfectly in the horizontal center of the viewport (aligned with main flower)
+            lyricEl.style.left = '50%';
+            
+            document.body.appendChild(lyricEl);
+            setTimeout(() => lyricEl.remove(), 7000);
+        }
+
+        // 4. BOTANICAL GARDEN CANVAS ENGINE
         const canvas = document.getElementById('botanicalCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -440,17 +571,24 @@
             ctx.fill();
         }
 
-        // 3. RUNTIME TRIGGERS
+        // 5. RUNTIME CONTROLS & MONITORING
+        const track = document.getElementById('birthdayTrack');
+        
+        // Actively updates execution frames to catch absolute audio time parameters
+        track.addEventListener('timeupdate', () => {
+            checkLyricsSync(track.currentTime);
+        });
+
         function toggleMusic() {
-            const track = document.getElementById('birthdayTrack');
             const btn = document.querySelector('.music-btn');
             
             if (!animationStarted) {
                 animationStarted = true;
                 
-                // Trigger large majestic planes at click time
+                // Launch jets and start falling leaf cycles
                 document.getElementById('jet-left').classList.add('launch-left');
                 document.getElementById('jet-right').classList.add('launch-right');
+                setInterval(spawnLeaf, 350);
                 
                 drawBotanicalScene();
             }
