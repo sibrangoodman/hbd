@@ -49,7 +49,7 @@
         /* MAJESTIC, SLOWER TWIN JETS */
         .jet {
             position: absolute;
-            font-size: 42px; /* Increased size significantly */
+            font-size: 42px; 
             z-index: 3;
             user-select: none;
             pointer-events: none;
@@ -60,14 +60,14 @@
             opacity: 1;
             top: 22vh;
             transform: rotate(12deg);
-            animation: flyLeftToRight 18s cubic-bezier(0.22, 1, 0.36, 1) forwards; /* Slowed down to 18s */
+            animation: flyLeftToRight 18s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
         }
 
         .launch-right {
             opacity: 1;
             top: 30vh;
             transform: rotate(-168deg);
-            animation: flyRightToLeft 18.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; /* Slowed down to 18.5s */
+            animation: flyRightToLeft 18.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
         }
 
         @keyframes flyLeftToRight {
@@ -227,9 +227,7 @@
 <body>
 
     <audio id="birthdayTrack" loop preload="auto">
-        <source src="PASTE_YOUR_DIRECT_CATBOX_URL_HERE.mp3" type="audio/mpeg">
-        <source src="song.mp3" type="audio/mpeg">
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        <source src="https://files.catbox.moe/j8gedr.mp3" type="audio/mpeg">
     </audio>
 
     <div class="sky-art"></div>
@@ -366,7 +364,6 @@
                 return;
             }
 
-            // REDRAW PISTILS SAFELY EVERY CYCLE AFTER BLOOM COMPLETED
             if (bloomProgress >= 1) {
                 drawFlowerPistil(centerX, centerFlowerY, 10 * detailProgress);
                 drawFlowerPistil(centerX - 130, startY - 150, 7 * detailProgress);
@@ -436,7 +433,6 @@
             ctx.restore();
         }
 
-        // BRIGHT YELLOW SOLID CORES
         function drawFlowerPistil(x, y, radius) {
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2);
@@ -452,7 +448,7 @@
             if (!animationStarted) {
                 animationStarted = true;
                 
-                // Trigger slow-moving heavy jets
+                // Trigger large majestic planes at click time
                 document.getElementById('jet-left').classList.add('launch-left');
                 document.getElementById('jet-right').classList.add('launch-right');
                 
