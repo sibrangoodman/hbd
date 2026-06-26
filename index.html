@@ -62,12 +62,12 @@
             display: inline-block;
         }
 
-        /* UPGRADED GLOWING NEON BLUE BANNER AESTHETIC */
+        /* GLOWING NEON BLUE BANNER AESTHETIC */
         .jet-banner {
             font-size: 1.1rem;
             font-weight: 600;
             letter-spacing: 1.5px;
-            color: #67e8f9; /* Vibrant Cyan Blue */
+            color: #67e8f9; 
             background: rgba(6, 182, 212, 0.12);
             padding: 6px 16px;
             border: 2px dashed rgba(34, 211, 238, 0.6);
@@ -100,13 +100,13 @@
         .launch-left .jet-banner {
             order: -1; 
             margin-right: 22px;
-            transform: rotate(4deg); /* Natural dragging lean */
+            transform: rotate(4deg); 
         }
         .launch-left .jet-banner::before {
             right: -24px;
         }
 
-        /* RIGHT JET TRACK (Flying Right to Left - FIXES FLIPPED OVER TEXT) */
+        /* RIGHT JET TRACK (Counter-balanced perfectly to remain right-side up) */
         .launch-right {
             opacity: 1;
             top: 32vh;
@@ -118,7 +118,6 @@
         .launch-right .jet-banner {
             order: 1; 
             margin-left: 22px;
-            /* Inverts rotation to counter plane flip, forces text right-side up, sets trail angle */
             transform: scaleY(1) scaleX(1) rotate(-12deg); 
         }
         .launch-right .jet-banner::before {
@@ -315,9 +314,8 @@
 </head>
 <body>
 
-    <audio id="birthdayTrack" loop preload="auto" crossorigin="anonymous">
-        <source src="https://archive.org/download/somethin-stupid-nancy-frank-sinatra/Somethin%27%20Stupid%20-%20Nancy%20%26%20Frank%20Sinatra.mp3" type="audio/mpeg">
-        <source src="https://files.catbox.moe/j8gedr.mp3" type="audio/mpeg">
+    <audio id="birthdayTrack" loop preload="auto">
+        <source src="song.mp3" type="audio/mpeg">
     </audio>
 
     <div class="sky-art"></div>
