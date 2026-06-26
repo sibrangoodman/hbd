@@ -46,53 +46,41 @@
             pointer-events: none;
         }
 
-        /* JET FLIGHT ANIMATIONS */
+        /* JET SYSTEM - HIDDEN BY DEFAULT UNTIL PLAY IS TAP-TRIGGERED */
         .jet {
             position: absolute;
             font-size: 24px;
             z-index: 3;
             user-select: none;
             pointer-events: none;
-            transition: all 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+            opacity: 0;
         }
 
-        #jet-left {
+        /* Active animations added via JS when play is pressed */
+        .launch-left {
+            opacity: 1;
             top: 25vh;
-            left: -50px;
             transform: rotate(15deg);
-            animation: flyLeftToRight 25s linear infinite;
+            animation: flyLeftToRight 8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        #jet-right {
+        .launch-right {
+            opacity: 1;
             top: 32vh;
-            right: -50px;
-            transform: rotate(-165deg); /* Flipped to face left */
-            animation: flyRightToLeft 28s linear infinite;
+            transform: rotate(-165deg);
+            animation: flyRightToLeft 8.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         @keyframes flyLeftToRight {
-            0% { left: -50px; }
-            100% { left: 110%; }
+            0% { left: -60px; transform: rotate(15deg) scale(0.8); }
+            50% { opacity: 1; }
+            100% { left: 115%; opacity: 0; transform: rotate(5deg) scale(0.5); }
         }
 
         @keyframes flyRightToLeft {
-            0% { right: -50px; }
-            100% { right: 110%; }
-        }
-
-        /* Hyperdrive exit when play is pressed */
-        .jet.departed-left {
-            animation: none !important;
-            left: 120% !important;
-            transform: scale(0.5) rotate(5deg) !important;
-            opacity: 0;
-        }
-
-        .jet.departed-right {
-            animation: none !important;
-            right: 120% !important;
-            transform: scale(0.5) rotate(-175deg) !important;
-            opacity: 0;
+            0% { right: -60px; transform: rotate(-165deg) scale(0.8); }
+            50% { opacity: 1; }
+            100% { right: 115%; opacity: 0; transform: rotate(-175deg) scale(0.5); }
         }
 
         .grass-hill {
@@ -448,24 +436,18 @@
             ctx.restore();
         }
 
-        function drawFlowerPistil(x, y, radius) {
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.fillStyle = '#facc15';
-            ctx.fill();
-        }
-
-        // 3. MUSIC & JET HANDLING DEPLOYMENT
+        // 3. RUNTIME TRIGGERS FOR MUSIC & FLIGHT SYSTEMS
         function toggleMusic() {
             const track = document.getElementById('birthdayTrack');
             const btn = document.querySelector('.music-btn');
             
-            // Clear planes instantly out of sight
-            document.getElementById('jet-left').classList.add('departed-left');
-            document.getElementById('jet-right').classList.add('departed-right');
-
             if (!animationStarted) {
                 animationStarted = true;
+                
+                // ✈️ LAUNCH JETS AT THE EXACT MOMENT PLAY/BLOOM IS STARTED
+                document.getElementById('jet-left').classList.add('launch-left');
+                document.getElementById('jet-right').classList.add('launch-right');
+                
                 drawBotanicalScene();
             }
 
@@ -473,8 +455,8 @@
                 track.play().then(() => {
                     btn.innerHTML = "⏸️ Pause";
                 }).catch(err => {
-                    console.log("Stream failed: ", err);
-                    btn.innerHTML = "⏸️ Pause"; 
+                    console.log("Audio link switch active: ", err);
+                    btn.innerHTML = "⏸️ Pause";
                 });
             } else {
                 track.pause();
