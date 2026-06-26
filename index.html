@@ -46,41 +46,42 @@
             pointer-events: none;
         }
 
-        /* JET SYSTEM - HIDDEN BY DEFAULT UNTIL PLAY IS TAP-TRIGGERED */
+        /* MAJESTIC, SLOWER TWIN JETS */
         .jet {
             position: absolute;
-            font-size: 24px;
+            font-size: 42px; /* Increased size significantly */
             z-index: 3;
             user-select: none;
             pointer-events: none;
             opacity: 0;
         }
 
-        /* Active animations added via JS when play is pressed */
         .launch-left {
             opacity: 1;
-            top: 25vh;
-            transform: rotate(15deg);
-            animation: flyLeftToRight 8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            top: 22vh;
+            transform: rotate(12deg);
+            animation: flyLeftToRight 18s cubic-bezier(0.22, 1, 0.36, 1) forwards; /* Slowed down to 18s */
         }
 
         .launch-right {
             opacity: 1;
-            top: 32vh;
-            transform: rotate(-165deg);
-            animation: flyRightToLeft 8.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            top: 30vh;
+            transform: rotate(-168deg);
+            animation: flyRightToLeft 18.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; /* Slowed down to 18.5s */
         }
 
         @keyframes flyLeftToRight {
-            0% { left: -60px; transform: rotate(15deg) scale(0.8); }
-            50% { opacity: 1; }
-            100% { left: 115%; opacity: 0; transform: rotate(5deg) scale(0.5); }
+            0% { left: -80px; transform: rotate(12deg) scale(0.9); }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { left: 115%; opacity: 0; transform: rotate(5deg) scale(0.7); }
         }
 
         @keyframes flyRightToLeft {
-            0% { right: -60px; transform: rotate(-165deg) scale(0.8); }
-            50% { opacity: 1; }
-            100% { right: 115%; opacity: 0; transform: rotate(-175deg) scale(0.5); }
+            0% { right: -80px; transform: rotate(-168deg) scale(0.9); }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { right: 115%; opacity: 0; transform: rotate(-175deg) scale(0.7); }
         }
 
         .grass-hill {
@@ -226,6 +227,7 @@
 <body>
 
     <audio id="birthdayTrack" loop preload="auto">
+        <source src="PASTE_YOUR_DIRECT_CATBOX_URL_HERE.mp3" type="audio/mpeg">
         <source src="song.mp3" type="audio/mpeg">
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
@@ -256,7 +258,7 @@
         </div>
 
         <div class="controls-area">
-            <button class="music-btn" onclick="toggleMusic()">▶️ Play</button>
+            <button class="music-btn" onclick="toggleMusic()">🎵 PLAY</button>
         </div>
     </div>
 
@@ -323,8 +325,6 @@
             const maxCenterLen = 175;
             const currentCenterLen = maxCenterLen * botanicalProgress;
 
-            ctx.shadowColor = 'rgba(2, 12, 6, 0.5)';
-            ctx.shadowBlur = 8;
             drawVine(centerX, startY, centerX, startY - currentCenterLen, '#22c55e', 5.5, -10);
             
             if (botanicalProgress > 0.2) {
@@ -337,7 +337,6 @@
                 drawVine(centerX, startY - 15, centerX - (80 * pSmall), startY - 15 - (60 * pSmall), '#14532d', 2.8, -15);
                 drawVine(centerX, startY - 25, centerX + (75 * pSmall), startY - 25 - (65 * pSmall), '#14532d', 2.8, 15);
             }
-            ctx.shadowBlur = 0;
 
             if (botanicalProgress < 1) {
                 botanicalProgress += 0.015;
@@ -367,6 +366,7 @@
                 return;
             }
 
+            // REDRAW PISTILS SAFELY EVERY CYCLE AFTER BLOOM COMPLETED
             if (bloomProgress >= 1) {
                 drawFlowerPistil(centerX, centerFlowerY, 10 * detailProgress);
                 drawFlowerPistil(centerX - 130, startY - 150, 7 * detailProgress);
@@ -436,7 +436,15 @@
             ctx.restore();
         }
 
-        // 3. RUNTIME TRIGGERS FOR MUSIC & FLIGHT SYSTEMS
+        // BRIGHT YELLOW SOLID CORES
+        function drawFlowerPistil(x, y, radius) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#facc15';
+            ctx.fill();
+        }
+
+        // 3. RUNTIME TRIGGERS
         function toggleMusic() {
             const track = document.getElementById('birthdayTrack');
             const btn = document.querySelector('.music-btn');
@@ -444,7 +452,7 @@
             if (!animationStarted) {
                 animationStarted = true;
                 
-                // ✈️ LAUNCH JETS AT THE EXACT MOMENT PLAY/BLOOM IS STARTED
+                // Trigger slow-moving heavy jets
                 document.getElementById('jet-left').classList.add('launch-left');
                 document.getElementById('jet-right').classList.add('launch-right');
                 
@@ -453,14 +461,13 @@
 
             if (track.paused) {
                 track.play().then(() => {
-                    btn.innerHTML = "⏸️ Pause";
+                    btn.innerHTML = "⏸️ PAUSE";
                 }).catch(err => {
-                    console.log("Audio link switch active: ", err);
-                    btn.innerHTML = "⏸️ Pause";
+                    btn.innerHTML = "⏸️ PAUSE";
                 });
             } else {
                 track.pause();
-                btn.innerHTML = "▶️ Play";
+                btn.innerHTML = "🎵 PLAY";
             }
         }
     </script>
