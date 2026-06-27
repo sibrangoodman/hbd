@@ -222,6 +222,7 @@
             animation: flyRightToLeftBird 16s linear forwards;
         }
 
+        /* FIX: Added fade out interpolation near 88%-100% boundary to eliminate edge stacking issues */
         @keyframes flyLeftToRightBird {
             0% { left: -60vw; opacity: 0; }
             5% { opacity: 1; }
@@ -326,8 +327,7 @@
             width: 100%;
             flex-grow: 1;
             align-items: flex-end;
-            justify-content: center; /* FIX: Changed to center to eliminate empty gap on right */
-            gap: 40px; /* Kept space between center canvas and outer text notes clean */
+            justify-content: space-between;
             margin-bottom: -15px; 
             z-index: 15;
             transition: opacity 2.5s ease;
@@ -337,6 +337,7 @@
             position: relative;
             width: 480px;
             height: 440px;
+            margin: 0 auto;
             display: flex;
             align-items: flex-end;
         }
@@ -437,7 +438,7 @@
             background: linear-gradient(to top, #3b2314, #5c3a21);
             border-radius: 12px 12px 4px 4px;
             box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8), inset 0 6px 0 rgba(255,255,255,0.1);
-            margin-bottom: 25px;
+            margin-bottom: 40px;
         }
         
         /* Cream Layering */
@@ -507,25 +508,6 @@
             100% { transform: translateX(-50%) scaleX(1.05) rotate(2deg); opacity: 1; }
         }
 
-        /* "You stayed 🥺" Text Styles */
-        .stayed-text {
-            font-size: 1.4rem;
-            font-weight: 300;
-            letter-spacing: 1px;
-            color: #ef4444;
-            text-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
-            opacity: 0;
-            transform: translateY(10px);
-            margin-bottom: 10px;
-            transition: all 2s ease;
-        }
-
-        .stayed-text.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* "Hehe" Text Styles */
         .hehe-text {
             font-size: 1.8rem;
             font-weight: 300;
@@ -534,7 +516,7 @@
             text-shadow: 0 0 15px rgba(255,255,255,0.3);
             opacity: 0;
             transform: translateY(10px);
-            transition: all 2s ease;
+            transition: all 2s ease 2s;
         }
 
         .hehe-text.show {
@@ -545,7 +527,7 @@
         @media (max-width: 900px) {
             body { overflow-y: auto; height: auto; }
             .container { height: auto; padding-bottom: 20px; }
-            .botanical-scene { flex-direction: column; align-items: center; margin-bottom: 0; gap: 10px; }
+            .botanical-scene { flex-direction: column; align-items: center; margin-bottom: 0; }
             .canvas-area { width: 340px; height: 320px; margin-top: 20px; }
             .note { margin-bottom: 20px; width: 100%; max-width: 320px; text-align: center !important; border-left: none !important; border-right: none !important; border-bottom: 3px solid; }
             .left-note { order: 2; border-bottom-color: #ef4444; }
@@ -613,7 +595,6 @@
                 <div class="flame"></div>
             </div>
         </div>
-        <div class="stayed-text" id="stayedText">You stayed 🥺</div>
         <div class="hehe-text" id="heheText">Hehe</div>
     </div>
 
@@ -736,14 +717,17 @@
                 }, 7500 + (index * 17000));
             });
 
+            // FINALE TRIGGER MATH: 7500ms initial buffer + (7 lines * 17000ms delay) + 16000ms final bird flight duration = ~142.5 seconds
             const finalTimeoutDuration = 7500 + ((messageLines.length - 1) * 17000) + 16000;
             setTimeout(triggerBlackoutFinale, finalTimeoutDuration);
         }
 
         // FINALE STATE CONTROLLER
         function triggerBlackoutFinale() {
+            // Stop generating falling environmental leaves
             if(leafIntervalId) clearInterval(leafIntervalId);
 
+            // Fade out baseline UI nodes sequentially
             document.getElementById('mainTitle').style.opacity = '0';
             document.getElementById('botanicalGroup').style.opacity = '0';
             document.getElementById('leafContainer').style.opacity = '0';
@@ -751,23 +735,15 @@
             document.getElementById('skyArtBg').style.opacity = '0';
             document.getElementById('grassHillBg').style.opacity = '0';
 
+            // Transition body layer down into complete darkness
             document.body.style.background = '#000000';
 
-            // Fixed timed fade-in orchestration chain
+            // Light candle and present deep canvas layout
             setTimeout(() => {
-                // Step A: Active darkness layer reveals cake
                 document.getElementById('finaleStage').classList.add('active');
-                
-                // Step B: Fades in "You stayed 🥺" after cake settles
                 setTimeout(() => {
-                    document.getElementById('stayedText').classList.add('show');
-                    
-                    // Step C: Fades in "Hehe" directly below it after
-                    setTimeout(() => {
-                        document.getElementById('heheText').classList.add('show');
-                    }, 2000);
-
-                }, 1800);
+                    document.getElementById('heheText').classList.add('show');
+                }, 1500);
             }, 3000);
         }
 
@@ -914,21 +890,23 @@
                 animationStarted = true;
                 
                 document.getElementById('jet-left').classList.add('launch-left');
-                setTimeout(() => {
-                    document.getElementById('jet-right').classList.add('launch-right');
-                }, 3800);
-
-                requestAnimationFrame(drawBotanicalScene);
+                document.getElementById('jet-right').classList.add('launch-right');
+                
                 triggerBirdSwarm();
-                leafIntervalId = setInterval(spawnLeaf, 700);
+                
+                leafIntervalId = setInterval(spawnLeaf, 380); 
+                drawBotanicalScene();
             }
 
             if (track.paused) {
-                track.play().catch(e => console.log("Audio play blocked:", e));
-                btn.innerText = "⏸ PAUSE";
+                track.play().then(() => {
+                    btn.innerHTML = "⏸️ PAUSE";
+                }).catch(err => {
+                    btn.innerHTML = "⏸️ PAUSE";
+                });
             } else {
                 track.pause();
-                btn.innerText = "🎵 PLAY";
+                btn.innerHTML = "🎵 PLAY";
             }
         }
     </script>
