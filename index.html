@@ -5,14 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy Birthday Ms. Cool</title>
     <style>
-        /* FIX: Prevents horizontal scrolling entirely without breaking vertical mobile layout */
-        html, body {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
-            background: #060713;
-        }
-        
         * {
             margin: 0;
             padding: 0;
@@ -21,11 +13,12 @@
         body {
             background: linear-gradient(to bottom, #060713 0%, #0b0d1a 40%, #111022 70%, #0f1614 100%);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
+            overflow: hidden;
             color: #ffffff;
             position: relative;
             transition: background 3s ease;
@@ -189,6 +182,7 @@
             background: rgba(52, 211, 153, 0.4);
         }
 
+        /* LEFT TO RIGHT BIRD CONFIGURATION */
         .bird-from-left {
             left: -60vw;
         }
@@ -208,6 +202,7 @@
             animation: flyLeftToRightBird 16s linear forwards;
         }
 
+        /* RIGHT TO LEFT BIRD CONFIGURATION */
         .bird-from-right {
             right: -60vw;
         }
@@ -227,6 +222,7 @@
             animation: flyRightToLeftBird 16s linear forwards;
         }
 
+        /* FIX: Added fade out interpolation near 88%-100% boundary to eliminate edge stacking issues */
         @keyframes flyLeftToRightBird {
             0% { left: -60vw; opacity: 0; }
             5% { opacity: 1; }
@@ -284,10 +280,10 @@
 
         .grass-hill {
             position: absolute;
-            bottom: 0;
+            bottom: -5vh;
             left: -10%;
             width: 120%;
-            height: 20vh;
+            height: 25vh;
             background: linear-gradient(to bottom, #092215 0%, #04120a 100%);
             border-radius: 50% 50% 0 0 / 100% 100% 0 0;
             z-index: 4; 
@@ -299,12 +295,12 @@
         .container {
             width: 100%;
             max-width: 1300px;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 40px 20px;
+            padding: 30px 20px 0 20px;
             z-index: 10;
             position: relative;
         }
@@ -318,7 +314,6 @@
             text-shadow: 0 2px 15px rgba(0, 0, 0, 0.7);
             z-index: 10;
             transition: opacity 2.5s ease;
-            text-align: center;
         }
 
         .highlight {
@@ -331,17 +326,17 @@
             display: flex;
             width: 100%;
             flex-grow: 1;
-            align-items: center;
+            align-items: flex-end;
             justify-content: space-between;
+            margin-bottom: -15px; 
             z-index: 15;
             transition: opacity 2.5s ease;
-            padding: 20px 0;
         }
 
         .canvas-area {
             position: relative;
-            width: 440px;
-            height: 400px;
+            width: 480px;
+            height: 440px;
             margin: 0 auto;
             display: flex;
             align-items: flex-end;
@@ -364,6 +359,7 @@
             padding: 22px;
             opacity: 0;
             box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+            margin-bottom: 9vh; 
             border-radius: 14px;
             transition: opacity 2.5s ease;
         }
@@ -382,18 +378,18 @@
 
         .controls-area {
             width: 100%;
+            height: 12vh;
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 50;
             transition: opacity 2s ease;
-            padding-top: 20px;
         }
 
         .music-btn {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 14px 45px;
+            padding: 12px 40px;
             color: #fff;
             border-radius: 40px;
             cursor: pointer;
@@ -402,7 +398,6 @@
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             backdrop-filter: blur(5px);
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            -webkit-tap-highlight-color: transparent;
         }
 
         .music-btn:hover {
@@ -427,7 +422,7 @@
             pointer-events: none;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 3.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .finale-stage.active {
@@ -435,35 +430,37 @@
             visibility: visible;
         }
 
-        /* Minimalist CSS Birthday Cake */
+        /* Minimalist Interactive CSS Birthday Cake */
         .cake-box {
             position: relative;
-            width: 180px;
-            height: 110px;
+            width: 200px;
+            height: 120px;
             background: linear-gradient(to top, #3b2314, #5c3a21);
             border-radius: 12px 12px 4px 4px;
             box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8), inset 0 6px 0 rgba(255,255,255,0.1);
-            margin-bottom: 35px;
+            margin-bottom: 40px;
         }
         
+        /* Cream Layering */
         .cake-box::before {
             content: "";
             position: absolute;
-            top: 32px;
+            top: 35px;
             left: 0;
             width: 100%;
-            height: 11px;
+            height: 12px;
             background: #fdf2f8;
-            box-shadow: 0 32px 0 #fdf2f8;
+            box-shadow: 0 35px 0 #fdf2f8;
         }
 
+        /* Top White Drip Frosting */
         .cake-box::after {
             content: "";
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 15px;
+            height: 16px;
             background: #ffffff;
             border-radius: 12px 12px 0 0;
             box-shadow: 0 4px 10px rgba(255,255,255,0.2);
@@ -471,11 +468,11 @@
 
         .candle {
             position: absolute;
-            top: -42px;
+            top: -45px;
             left: 50%;
             transform: translateX(-50%);
-            width: 9px;
-            height: 43px;
+            width: 10px;
+            height: 46px;
             background: linear-gradient(to right, #a855f7, #c084fc);
             border-radius: 3px 3px 0 0;
             z-index: 101;
@@ -487,17 +484,18 @@
             left: 50%;
             transform: translateX(-50%);
             width: 2px;
-            height: 6px;
+            height: 7px;
             background: #4b5563;
         }
 
+        /* Ambient Glowing Flame Engine */
         .flame {
             position: absolute;
-            top: -22px;
+            top: -24px;
             left: 50%;
             transform: translateX(-50%);
-            width: 13px;
-            height: 22px;
+            width: 14px;
+            height: 24px;
             background: radial-gradient(circle at center, #fef08a 20%, #f97316 60%, transparent 90%);
             border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
             box-shadow: 0 0 20px #f97316, 0 0 40px #ef4444;
@@ -510,17 +508,7 @@
             100% { transform: translateX(-50%) scaleX(1.05) rotate(2deg); opacity: 1; }
         }
 
-        .text-slot-container {
-            position: relative;
-            width: 100%;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .stayed-text, .hehe-text {
-            position: absolute;
+        .hehe-text {
             font-size: 1.8rem;
             font-weight: 300;
             letter-spacing: 3px;
@@ -528,19 +516,7 @@
             text-shadow: 0 0 15px rgba(255,255,255,0.3);
             opacity: 0;
             transform: translateY(10px);
-            transition: all 1.5s ease;
-            text-align: center;
-            width: 100%;
-        }
-        
-        .stayed-text.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .stayed-text.fade-out {
-            opacity: 0;
-            transform: translateY(-10px);
+            transition: all 2s ease 2s;
         }
 
         .hehe-text.show {
@@ -548,43 +524,17 @@
             transform: translateY(0);
         }
 
-        /* MOBILE FIX RESPONSIVENESS */
         @media (max-width: 900px) {
-            body {
-                overflow-y: auto;
-            }
-            .container {
-                height: auto;
-                min-height: 100vh;
-                justify-content: flex-start;
-                gap: 25px;
-                padding: 30px 15px;
-            }
-            .botanical-scene {
-                flex-direction: column;
-                align-items: center;
-                gap: 25px;
-                width: 100%;
-            }
-            .canvas-area {
-                width: 320px;
-                height: 300px;
-                order: 1;
-            }
-            .note {
-                width: 100%;
-                max-width: 340px;
-                text-align: center !important;
-                border-left: none !important;
-                border-right: none !important;
-                border-bottom: 3px solid;
-                padding: 16px;
-            }
+            body { overflow-y: auto; height: auto; }
+            .container { height: auto; padding-bottom: 20px; }
+            .botanical-scene { flex-direction: column; align-items: center; margin-bottom: 0; }
+            .canvas-area { width: 340px; height: 320px; margin-top: 20px; }
+            .note { margin-bottom: 20px; width: 100%; max-width: 320px; text-align: center !important; border-left: none !important; border-right: none !important; border-bottom: 3px solid; }
             .left-note { order: 2; border-bottom-color: #ef4444; }
             .right-note { order: 3; border-bottom-color: #a855f7; }
-            .controls-area { order: 4; margin-top: auto; padding-bottom: 20px; }
-            .grass-hill { height: 120px; }
-            .jet-wrapper { scale: 0.75; }
+            .controls-area { height: auto; margin-top: 20px; }
+            .grass-hill { height: 150px; bottom: -20px; }
+            .jet-wrapper { scale: 0.85; }
         }
 
         @keyframes fadeIn {
@@ -625,7 +575,7 @@
             </div>
 
             <div class="canvas-area">
-                <canvas id="botanicalCanvas" width="440" height="400"></canvas>
+                <canvas id="botanicalCanvas" width="480" height="440"></canvas>
             </div>
             
             <div class="note right-note">
@@ -645,11 +595,7 @@
                 <div class="flame"></div>
             </div>
         </div>
-        
-        <div class="text-slot-container">
-            <div class="stayed-text" id="stayedText">you stayed</div>
-            <div class="hehe-text" id="heheText">Hehe</div>
-        </div>
+        <div class="hehe-text" id="heheText">Hehe</div>
     </div>
 
     <script>
@@ -683,7 +629,7 @@
             
             const wordWidth = 330; 
             const startX = (totalWidth - wordWidth) / 2;
-            const startY = totalHeight * 0.14; 
+            const startY = totalHeight * 0.18; 
 
             letterGroups.forEach(letter => {
                 letter.forEach(pt => {
@@ -737,7 +683,7 @@
             setTimeout(() => leaf.remove(), duration * 1000);
         }
 
-        // 3. ALTERNATING DIRECTION BIRD ENGINE
+        // 3. ALTERNATING DIRECTION BIRD ENGINE WITH FINALE HOOK
         function triggerBirdSwarm() {
             const sky = document.getElementById('birdsSkyField');
             sky.innerHTML = ''; 
@@ -771,14 +717,17 @@
                 }, 7500 + (index * 17000));
             });
 
+            // FINALE TRIGGER MATH: 7500ms initial buffer + (7 lines * 17000ms delay) + 16000ms final bird flight duration = ~142.5 seconds
             const finalTimeoutDuration = 7500 + ((messageLines.length - 1) * 17000) + 16000;
             setTimeout(triggerBlackoutFinale, finalTimeoutDuration);
         }
 
         // FINALE STATE CONTROLLER
         function triggerBlackoutFinale() {
+            // Stop generating falling environmental leaves
             if(leafIntervalId) clearInterval(leafIntervalId);
 
+            // Fade out baseline UI nodes sequentially
             document.getElementById('mainTitle').style.opacity = '0';
             document.getElementById('botanicalGroup').style.opacity = '0';
             document.getElementById('leafContainer').style.opacity = '0';
@@ -786,26 +735,15 @@
             document.getElementById('skyArtBg').style.opacity = '0';
             document.getElementById('grassHillBg').style.opacity = '0';
 
-            // Ensure window snaps smoothly to top position for finale presentation framing
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            document.body.style.overflowY = 'hidden'; 
+            // Transition body layer down into complete darkness
             document.body.style.background = '#000000';
 
+            // Light candle and present deep canvas layout
             setTimeout(() => {
                 document.getElementById('finaleStage').classList.add('active');
-                
                 setTimeout(() => {
-                    const stayed = document.getElementById('stayedText');
-                    stayed.classList.add('show');
-                    
-                    setTimeout(() => {
-                        stayed.classList.add('fade-out');
-                        
-                        setTimeout(() => {
-                            document.getElementById('heheText').classList.add('show');
-                        }, 1500); 
-                    }, 2500);
-                }, 1000);
+                    document.getElementById('heheText').classList.add('show');
+                }, 1500);
             }, 3000);
         }
 
@@ -822,20 +760,20 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const centerX = canvas.width / 2;
             const startY = canvas.height; 
-            const maxCenterLen = 160;
+            const maxCenterLen = 175;
             const currentCenterLen = maxCenterLen * botanicalProgress;
 
             drawVine(centerX, startY, centerX, startY - currentCenterLen, '#22c55e', 5.5, -10);
             
             if (botanicalProgress > 0.2) {
                 const p = (botanicalProgress - 0.2) / 0.8;
-                drawVine(centerX, startY - 35, centerX - (120 * p), startY - 35 - (105 * p), '#166534', 4, -30);
-                drawVine(centerX, startY - 50, centerX + (125 * p), startY - 50 - (95 * p), '#166534', 4, 30);
+                drawVine(centerX, startY - 35, centerX - (130 * p), startY - 35 - (115 * p), '#166534', 4, -30);
+                drawVine(centerX, startY - 50, centerX + (135 * p), startY - 50 - (105 * p), '#166534', 4, 30);
             }
             if (botanicalProgress > 0.45) {
                 const pSmall = (botanicalProgress - 0.45) / 0.55;
-                drawVine(centerX, startY - 15, centerX - (75 * pSmall), startY - 15 - (55 * pSmall), '#14532d', 2.8, -15);
-                drawVine(centerX, startY - 25, centerX + (70 * pSmall), startY - 25 - (60 * pSmall), '#14532d', 2.8, 15);
+                drawVine(centerX, startY - 15, centerX - (80 * pSmall), startY - 15 - (60 * pSmall), '#14532d', 2.8, -15);
+                drawVine(centerX, startY - 25, centerX + (75 * pSmall), startY - 25 - (65 * pSmall), '#14532d', 2.8, 15);
             }
 
             if (botanicalProgress < 1) {
@@ -845,19 +783,19 @@
             }
 
             drawGardenLeaves(centerX, startY, maxCenterLen);
-            const mainRadius = 35;
+            const mainRadius = 38;
             const centerFlowerY = startY - maxCenterLen;
             drawFlower(centerX, centerFlowerY, mainRadius * bloomProgress, '#ef4444', '#b91c1c');
 
             if (bloomProgress > 0.35) {
                 const bloomSide = (bloomProgress - 0.35) / 0.65;
-                drawFlower(centerX - 120, startY - 140, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
-                drawFlower(centerX + 125, startY - 145, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
+                drawFlower(centerX - 130, startY - 150, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
+                drawFlower(centerX + 135, startY - 155, (mainRadius * 0.85) * bloomSide, '#f472b6', '#db2777');
             }
             if (bloomProgress > 0.55) {
                 const bloomSmall = (bloomProgress - 0.55) / 0.45;
-                drawFlower(centerX - 75, startY - 70, (mainRadius * 0.52) * bloomSmall, '#f43f5e', '#be123c');
-                drawFlower(centerX + 70, startY - 85, (mainRadius * 0.56) * bloomSmall, '#f472b6', '#be123c');
+                drawFlower(centerX - 80, startY - 75, (mainRadius * 0.52) * bloomSmall, '#f43f5e', '#be123c');
+                drawFlower(centerX + 75, startY - 90, (mainRadius * 0.56) * bloomSmall, '#f472b6', '#be123c');
             }
 
             if (bloomProgress < 1) {
@@ -868,10 +806,10 @@
 
             if (bloomProgress >= 1) {
                 drawFlowerPistil(centerX, centerFlowerY, 10 * detailProgress);
-                drawFlowerPistil(centerX - 120, startY - 140, 7 * detailProgress);
-                drawFlowerPistil(centerX + 125, startY - 145, 7 * detailProgress);
-                drawFlowerPistil(centerX - 75, startY - 70, 4 * detailProgress);
-                drawFlowerPistil(centerX + 70, startY - 85, 4.5 * detailProgress);
+                drawFlowerPistil(centerX - 130, startY - 150, 7 * detailProgress);
+                drawFlowerPistil(centerX + 135, startY - 155, 7 * detailProgress);
+                drawFlowerPistil(centerX - 80, startY - 75, 4 * detailProgress);
+                drawFlowerPistil(centerX + 75, startY - 90, 4.5 * detailProgress);
 
                 if (detailProgress < 1) {
                     detailProgress += 0.03;
@@ -899,7 +837,7 @@
                 const leafY = startY - (totalLen * ratio);
                 const isRight = i % 2 === 0;
                 const leafX = centerX + (isRight ? 5 : -5);
-                drawOrganicLeaf(leafX, leafY, 14, isRight ? 35 : -35);
+                drawOrganicLeaf(leafX, leafY, 15, isRight ? 35 : -35);
             }
         }
 
