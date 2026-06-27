@@ -148,20 +148,21 @@
             pointer-events: none;
             visibility: hidden; 
             opacity: 0;
+            transform: scale(1); /* Baseline proper scaling */
         }
 
         .bird-emoji {
-            font-size: 35px;
+            font-size: 38px; /* Slightly upscaled for crisp detail */
             display: inline-block;
         }
 
         .bird-banner {
-            font-size: 0.95rem;
+            font-size: 1rem; /* Universally scaled text baseline */
             font-weight: 500;
             letter-spacing: 1px;
             color: #a7f3d0; 
             background: rgba(16, 185, 129, 0.14);
-            padding: 6px 14px;
+            padding: 7px 16px;
             border: 2px dashed rgba(52, 211, 153, 0.5);
             border-radius: 20px 4px 20px 4px;
             white-space: nowrap;
@@ -407,7 +408,9 @@
             .right-note { order: 3; border-bottom-color: #a855f7; }
             .controls-area { height: auto; margin-top: 20px; }
             .grass-hill { height: 150px; bottom: -20px; }
+            /* Mobile scaling refinements so it never looks crowded */
             .jet-wrapper { scale: 0.85; }
+            .bird-wrapper { scale: 0.82; }
         }
 
         @keyframes fadeIn {
@@ -545,7 +548,7 @@
             setTimeout(() => leaf.remove(), duration * 1000);
         }
 
-        // 3. ALTERNATING DIRECTION BIRD ENGINE
+        // 3. SEAMLESS ONE-AT-A-TIME BIRD SWARM ENGINE
         function triggerBirdSwarm() {
             const sky = document.getElementById('birdsSkyField');
             sky.innerHTML = ''; 
@@ -553,12 +556,11 @@
             messageLines.forEach((text, index) => {
                 const birdWrapper = document.createElement('div');
                 
-                // Alternate directions: Even indexes from left, Odd indexes from right
                 const isFromLeft = index % 2 === 0;
                 birdWrapper.className = `bird-wrapper ${isFromLeft ? 'bird-from-left' : 'bird-from-right'}`;
                 
-                // Smoothly space out vertical tracking heights (between 34% and 54% down the viewport)
-                const verticalHeight = 34 + (index % 3) * 8;
+                // Keep the vertical lanes distinct but neatly grouped (35% to 51% window height)
+                const verticalHeight = 35 + (index % 3) * 8;
                 birdWrapper.style.top = `${verticalHeight}vh`;
                 
                 birdWrapper.innerHTML = `
@@ -568,10 +570,11 @@
                 
                 sky.appendChild(birdWrapper);
                 
-                // Wait 7.5 seconds for jets to exit cleanly, then launch each sequential bird 6 seconds apart
+                // 7.5s start buffer for jets. 17s cascading window means 
+                // Bird 2 only starts after Bird 1's 16-second screen run has fully completed.
                 setTimeout(() => {
                     birdWrapper.classList.add(isFromLeft ? 'launch-left-bird' : 'launch-right-bird');
-                }, 7500 + (index * 6000));
+                }, 7500 + (index * 17000));
             });
         }
 
