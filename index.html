@@ -54,7 +54,7 @@
             z-index: 3;
             user-select: none;
             pointer-events: none;
-            visibility: hidden; /* Fixes any startup flash glitch */
+            visibility: hidden;
             opacity: 0;
         }
 
@@ -117,7 +117,7 @@
         .launch-right .jet-banner {
             order: 1; 
             margin-left: 22px;
-            transform: scaleY(1) scaleX(1) rotate(-12deg); 
+            transform: rotate(-12deg); 
         }
         .launch-right .jet-banner::before {
             left: -24px;
@@ -138,7 +138,7 @@
         }
 
 
-        /* ==================== SEQUENTIAL BIRD STYLES ==================== */
+        /* ==================== ALTERNATING BIRD STYLES ==================== */
         .bird-wrapper {
             position: absolute;
             display: flex;
@@ -146,15 +146,13 @@
             z-index: 4;
             user-select: none;
             pointer-events: none;
-            visibility: hidden; /* Absolute shield against initial load glitches */
+            visibility: hidden; 
             opacity: 0;
-            left: -100vw;
         }
 
         .bird-emoji {
             font-size: 35px;
             display: inline-block;
-            animation: gentleBob 1.6s ease-in-out infinite alternate;
         }
 
         .bird-banner {
@@ -181,35 +179,69 @@
             background: rgba(52, 211, 153, 0.4);
         }
 
-        /* Flight direction settings: birds come across seamlessly */
-        .launch-bird-active {
-            visibility: visible !important;
-            animation: flyAcrossScreen 16s linear forwards;
+        /* LEFT TO RIGHT BIRD CONFIGURATION */
+        .bird-from-left {
+            left: -60vw;
         }
-        
-        .launch-bird-active .bird-emoji {
-            transform: scaleX(-1); /* Faces forward right */
+        .bird-from-left .bird-emoji {
+            transform: scaleX(-1); /* Face right */
+            animation: gentleBobLeft 1.6s ease-in-out infinite alternate;
         }
-        
-        .launch-bird-active .bird-banner {
+        .bird-from-left .bird-banner {
             order: -1;
             margin-right: 20px;
         }
-        
-        .launch-bird-active .bird-banner::before {
+        .bird-from-left .bird-banner::before {
             right: -22px;
         }
+        .launch-left-bird {
+            visibility: visible !important;
+            animation: flyLeftToRightBird 16s linear forwards;
+        }
 
-        @keyframes flyAcrossScreen {
+        /* RIGHT TO LEFT BIRD CONFIGURATION */
+        .bird-from-right {
+            right: -60vw;
+        }
+        .bird-from-right .bird-emoji {
+            transform: scaleX(1); /* Face left */
+            animation: gentleBobRight 1.6s ease-in-out infinite alternate;
+        }
+        .bird-from-right .bird-banner {
+            order: 1;
+            margin-left: 20px;
+        }
+        .bird-from-right .bird-banner::before {
+            left: -22px;
+        }
+        .launch-right-bird {
+            visibility: visible !important;
+            animation: flyRightToLeftBird 16s linear forwards;
+        }
+
+        /* ANIMATIONS FOR FLIGHTS */
+        @keyframes flyLeftToRightBird {
             0% { left: -60vw; opacity: 0; }
             5% { opacity: 1; }
             95% { opacity: 1; }
             100% { left: 120vw; opacity: 0; }
         }
 
-        @keyframes gentleBob {
+        @keyframes flyRightToLeftBird {
+            0% { right: -60vw; opacity: 0; }
+            5% { opacity: 1; }
+            95% { opacity: 1; }
+            100% { right: 120vw; opacity: 0; }
+        }
+
+        @keyframes gentleBobLeft {
             0% { transform: scaleX(-1) translateY(0px) rotate(-4deg); }
             100% { transform: scaleX(-1) translateY(-6px) rotate(4deg); }
+        }
+
+        @keyframes gentleBobRight {
+            0% { transform: scaleX(1) translateY(0px) rotate(4deg); }
+            100% { transform: scaleX(1) translateY(-6px) rotate(-4deg); }
         }
 
 
@@ -430,7 +462,6 @@
     </div>
 
     <script>
-        // Your beautiful line-by-line bird scrolling array
         const messageLines = [
             "happy birthday cap,",
             "17?",
@@ -514,18 +545,20 @@
             setTimeout(() => leaf.remove(), duration * 1000);
         }
 
-        // 3. SEQUENTIAL BIRD DISPATCHER ENGINE
+        // 3. ALTERNATING DIRECTION BIRD ENGINE
         function triggerBirdSwarm() {
             const sky = document.getElementById('birdsSkyField');
-            sky.innerHTML = ''; // Clean field
+            sky.innerHTML = ''; 
             
-            // Generate distinct birds one by one with calculated cascading stagger delays
             messageLines.forEach((text, index) => {
                 const birdWrapper = document.createElement('div');
-                birdWrapper.className = 'bird-wrapper';
                 
-                // Randomize heights a little bit so they look organic but clean (e.g., between 35% and 55% down the sky)
-                const verticalHeight = 35 + (index % 3) * 7;
+                // Alternate directions: Even indexes from left, Odd indexes from right
+                const isFromLeft = index % 2 === 0;
+                birdWrapper.className = `bird-wrapper ${isFromLeft ? 'bird-from-left' : 'bird-from-right'}`;
+                
+                // Smoothly space out vertical tracking heights (between 34% and 54% down the viewport)
+                const verticalHeight = 34 + (index % 3) * 8;
                 birdWrapper.style.top = `${verticalHeight}vh`;
                 
                 birdWrapper.innerHTML = `
@@ -535,10 +568,10 @@
                 
                 sky.appendChild(birdWrapper);
                 
-                // Pure clean execution: Wait 7 seconds for jets to completely vanish, then send birds spaced by 5.5s
+                // Wait 7.5 seconds for jets to exit cleanly, then launch each sequential bird 6 seconds apart
                 setTimeout(() => {
-                    birdWrapper.classList.add('launch-bird-active');
-                }, 7000 + (index * 5500));
+                    birdWrapper.classList.add(isFromLeft ? 'launch-left-bird' : 'launch-right-bird');
+                }, 7500 + (index * 6000));
             });
         }
 
@@ -684,11 +717,9 @@
             if (!animationStarted) {
                 animationStarted = true;
                 
-                // Launch Jets cleanly
                 document.getElementById('jet-left').classList.add('launch-left');
                 document.getElementById('jet-right').classList.add('launch-right');
                 
-                // Dispatch sequential scrolling birds
                 triggerBirdSwarm();
                 
                 setInterval(spawnLeaf, 380); 
