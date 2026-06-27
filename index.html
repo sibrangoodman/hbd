@@ -21,6 +21,7 @@
             overflow: hidden;
             color: #ffffff;
             position: relative;
+            transition: background 3s ease;
         }
 
         .sky-art {
@@ -34,6 +35,7 @@
                 radial-gradient(circle at 75% 25%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
             z-index: 1;
             pointer-events: none;
+            transition: opacity 3s ease;
         }
 
         .constellation-overlay {
@@ -44,6 +46,7 @@
             height: 100%;
             z-index: 2;
             pointer-events: none;
+            transition: opacity 3s ease;
         }
 
         /* ==================== JET FLIGHT STYLES ==================== */
@@ -219,18 +222,19 @@
             animation: flyRightToLeftBird 16s linear forwards;
         }
 
+        /* FIX: Added fade out interpolation near 88%-100% boundary to eliminate edge stacking issues */
         @keyframes flyLeftToRightBird {
             0% { left: -60vw; opacity: 0; }
             5% { opacity: 1; }
-            95% { opacity: 1; }
-            100% { left: 120vw; opacity: 0; }
+            85% { opacity: 1; }
+            100% { left: 110vw; opacity: 0; }
         }
 
         @keyframes flyRightToLeftBird {
             0% { right: -60vw; opacity: 0; }
             5% { opacity: 1; }
-            95% { opacity: 1; }
-            100% { right: 120vw; opacity: 0; }
+            85% { opacity: 1; }
+            100% { right: 110vw; opacity: 0; }
         }
 
         @keyframes gentleBobLeft {
@@ -254,6 +258,7 @@
             z-index: 5;
             pointer-events: none;
             overflow: hidden;
+            transition: opacity 3s ease;
         }
 
         .leaf {
@@ -284,6 +289,7 @@
             z-index: 4; 
             pointer-events: none;
             box-shadow: inset 0 20px 40px rgba(34, 197, 94, 0.04);
+            transition: opacity 3s ease;
         }
 
         .container {
@@ -307,6 +313,7 @@
             animation: fadeIn 2s ease-in forwards 0.5s;
             text-shadow: 0 2px 15px rgba(0, 0, 0, 0.7);
             z-index: 10;
+            transition: opacity 2.5s ease;
         }
 
         .highlight {
@@ -323,6 +330,7 @@
             justify-content: space-between;
             margin-bottom: -15px; 
             z-index: 15;
+            transition: opacity 2.5s ease;
         }
 
         .canvas-area {
@@ -338,6 +346,7 @@
             width: 100%;
             height: 100%;
             display: block;
+            transition: opacity 2.5s ease;
         }
 
         .note {
@@ -352,6 +361,7 @@
             box-shadow: 0 12px 35px rgba(0,0,0,0.5);
             margin-bottom: 9vh; 
             border-radius: 14px;
+            transition: opacity 2.5s ease;
         }
 
         .left-note {
@@ -373,6 +383,7 @@
             justify-content: center;
             align-items: center;
             z-index: 50;
+            transition: opacity 2s ease;
         }
 
         .music-btn {
@@ -394,6 +405,123 @@
             color: #050507;
             box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
             transform: translateY(-2px);
+        }
+
+        /* ==================== FINALE CANDLE AND CAKE LAYOUT ==================== */
+        .finale-stage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 3.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .finale-stage.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Minimalist Interactive CSS Birthday Cake */
+        .cake-box {
+            position: relative;
+            width: 200px;
+            height: 120px;
+            background: linear-gradient(to top, #3b2314, #5c3a21);
+            border-radius: 12px 12px 4px 4px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8), inset 0 6px 0 rgba(255,255,255,0.1);
+            margin-bottom: 40px;
+        }
+        
+        /* Cream Layering */
+        .cake-box::before {
+            content: "";
+            position: absolute;
+            top: 35px;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background: #fdf2f8;
+            box-shadow: 0 35px 0 #fdf2f8;
+        }
+
+        /* Top White Drip Frosting */
+        .cake-box::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 16px;
+            background: #ffffff;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 4px 10px rgba(255,255,255,0.2);
+        }
+
+        .candle {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 46px;
+            background: linear-gradient(to right, #a855f7, #c084fc);
+            border-radius: 3px 3px 0 0;
+            z-index: 101;
+        }
+
+        .candle-wick {
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 7px;
+            background: #4b5563;
+        }
+
+        /* Ambient Glowing Flame Engine */
+        .flame {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 24px;
+            background: radial-gradient(circle at center, #fef08a 20%, #f97316 60%, transparent 90%);
+            border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+            box-shadow: 0 0 20px #f97316, 0 0 40px #ef4444;
+            animation: flicker 0.15s ease-in-out infinite alternate;
+            transform-origin: center bottom;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scaleX(0.95) rotate(-2deg); opacity: 0.93; }
+            100% { transform: translateX(-50%) scaleX(1.05) rotate(2deg); opacity: 1; }
+        }
+
+        .hehe-text {
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,0.85);
+            text-shadow: 0 0 15px rgba(255,255,255,0.3);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 2s ease 2s;
+        }
+
+        .hehe-text.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         @media (max-width: 900px) {
@@ -420,7 +548,7 @@
         <source src="song.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="sky-art"></div>
+    <div class="sky-art" id="skyArtBg"></div>
     <svg class="constellation-overlay" id="starMap"></svg>
     <div class="leaf-container" id="leafContainer"></div>
     
@@ -436,12 +564,12 @@
 
     <div id="birdsSkyField" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4;"></div>
 
-    <div class="grass-hill"></div>
+    <div class="grass-hill" id="grassHillBg"></div>
 
-    <div class="container">
-        <h1>Happy Birthday <span class="highlight">Ms. Cool</span> 😉❤️</h1>
+    <div class="container" id="mainSceneContainer">
+        <h1 id="mainTitle">Happy Birthday <span class="highlight">Ms. Cool</span> 😉❤️</h1>
 
-        <div class="botanical-scene">
+        <div class="botanical-scene" id="botanicalGroup">
             <div class="note left-note">
                 haha now you olddd and happy birthday and all and blah blah idk what to say lol 🥳👵
             </div>
@@ -455,9 +583,19 @@
             </div>
         </div>
 
-        <div class="controls-area">
+        <div class="controls-area" id="controlsGroup">
             <button class="music-btn" onclick="toggleMusic()">🎵 PLAY</button>
         </div>
+    </div>
+
+    <div class="finale-stage" id="finaleStage">
+        <div class="cake-box">
+            <div class="candle">
+                <div class="candle-wick"></div>
+                <div class="flame"></div>
+            </div>
+        </div>
+        <div class="hehe-text" id="heheText">Hehe</div>
     </div>
 
     <script>
@@ -468,8 +606,8 @@
             "yepp happy birthday to the coolest person i know 😚",
             "hope the best for ya and may ya get whatever is best for ya",
             "and keeps ya happy and all",
-            "hehe now you can leave ig",
-            "i'm really glad i got to know you. i really am...🙈"
+            "hehe now you can leave ig or stay idk😁",
+            "i'm really glad i got to know you. i really am..."
         ];
 
         // 1. CONSTELLATION GENERATOR
@@ -521,6 +659,7 @@
         // 2. FULL-SCREEN LEAF ENGINE
         const leafContainer = document.getElementById('leafContainer');
         const leafTypes = ['🍃', '🌸', '🍁', '🌱', '🌹', '🍂'];
+        let leafIntervalId = null;
         
         function spawnLeaf() {
             if (document.hidden) return;
@@ -544,7 +683,7 @@
             setTimeout(() => leaf.remove(), duration * 1000);
         }
 
-        // 3. ALTERNATING DIRECTION BIRD ENGINE WITH CUSTOM FONT BALANCING
+        // 3. ALTERNATING DIRECTION BIRD ENGINE WITH FINALE HOOK
         function triggerBirdSwarm() {
             const sky = document.getElementById('birdsSkyField');
             sky.innerHTML = ''; 
@@ -555,14 +694,12 @@
                 const isFromLeft = index % 2 === 0;
                 birdWrapper.className = `bird-wrapper ${isFromLeft ? 'bird-from-left' : 'bird-from-right'}`;
                 
-                // ADJUSTMENT: Put long lines a little bit higher up (e.g., lane index 4) to ensure maximum screen clearance
                 let verticalHeight = 35 + (index % 3) * 8;
                 if (text.length > 45) {
-                    verticalHeight = 31; // Pushes line 5 up into safer clear sky territory
+                    verticalHeight = 31; 
                 }
                 birdWrapper.style.top = `${verticalHeight}vh`;
                 
-                // Dynamic Text Resizer Configuration
                 let fontOverrideStyle = "";
                 if (text.length > 45) {
                     fontOverrideStyle = "style='font-size: 0.82rem; padding: 5px 12px; max-width: 85vw; white-space: normal; line-height: 1.3;'";
@@ -579,6 +716,35 @@
                     birdWrapper.classList.add(isFromLeft ? 'launch-left-bird' : 'launch-right-bird');
                 }, 7500 + (index * 17000));
             });
+
+            // FINALE TRIGGER MATH: 7500ms initial buffer + (7 lines * 17000ms delay) + 16000ms final bird flight duration = ~142.5 seconds
+            const finalTimeoutDuration = 7500 + ((messageLines.length - 1) * 17000) + 16000;
+            setTimeout(triggerBlackoutFinale, finalTimeoutDuration);
+        }
+
+        // FINALE STATE CONTROLLER
+        function triggerBlackoutFinale() {
+            // Stop generating falling environmental leaves
+            if(leafIntervalId) clearInterval(leafIntervalId);
+
+            // Fade out baseline UI nodes sequentially
+            document.getElementById('mainTitle').style.opacity = '0';
+            document.getElementById('botanicalGroup').style.opacity = '0';
+            document.getElementById('leafContainer').style.opacity = '0';
+            document.getElementById('starMap').style.opacity = '0';
+            document.getElementById('skyArtBg').style.opacity = '0';
+            document.getElementById('grassHillBg').style.opacity = '0';
+
+            // Transition body layer down into complete darkness
+            document.body.style.background = '#000000';
+
+            // Light candle and present deep canvas layout
+            setTimeout(() => {
+                document.getElementById('finaleStage').classList.add('active');
+                setTimeout(() => {
+                    document.getElementById('heheText').classList.add('show');
+                }, 1500);
+            }, 3000);
         }
 
         // 4. BOTANICAL GARDEN CANVAS ENGINE
@@ -728,7 +894,7 @@
                 
                 triggerBirdSwarm();
                 
-                setInterval(spawnLeaf, 380); 
+                leafIntervalId = setInterval(spawnLeaf, 380); 
                 drawBotanicalScene();
             }
 
