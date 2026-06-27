@@ -2,13 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Happy Birthday Ms. Cool</title>
     <style>
-        /* FIX: Lock horizontal width globally to eliminate right side empty scrolling space */
+        /* FIX: Absolute nuclear option to eliminate all scrolls and side scrollbars completely */
         html, body {
-            width: 100%;
-            overflow-x: hidden;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden !important;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
         
         * {
@@ -19,13 +23,11 @@
         body {
             background: linear-gradient(to bottom, #060713 0%, #0b0d1a 40%, #111022 70%, #0f1614 100%);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
             color: #ffffff;
-            position: relative;
             transition: background 3s ease;
         }
 
@@ -187,7 +189,6 @@
             background: rgba(52, 211, 153, 0.4);
         }
 
-        /* LEFT TO RIGHT BIRD CONFIGURATION */
         .bird-from-left {
             left: -60vw;
         }
@@ -207,7 +208,6 @@
             animation: flyLeftToRightBird 16s linear forwards;
         }
 
-        /* RIGHT TO LEFT BIRD CONFIGURATION */
         .bird-from-right {
             right: -60vw;
         }
@@ -434,24 +434,6 @@
             visibility: visible;
         }
 
-        /* ADJUSTMENT: Added "you stayed" introductory text element */
-        .stayed-text {
-            font-size: 1.5rem;
-            font-weight: 300;
-            letter-spacing: 4px;
-            color: rgba(217, 249, 157, 0.9);
-            margin-bottom: 25px;
-            text-shadow: 0 0 15px rgba(163, 230, 53, 0.3);
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 2s ease;
-        }
-        
-        .stayed-text.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
         /* Minimalist CSS Birthday Cake */
         .cake-box {
             position: relative;
@@ -527,7 +509,19 @@
             100% { transform: translateX(-50%) scaleX(1.05) rotate(2deg); opacity: 1; }
         }
 
-        .hehe-text {
+        /* SHARED CONTAINER FOR POSITIONING BOTH TEXTS IN THE EXACT SAME SLOT */
+        .text-slot-container {
+            position: relative;
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* FIX: Made 'you stayed' style exact identical matches with clean absolute overlay switching */
+        .stayed-text {
+            position: absolute;
             font-size: 1.8rem;
             font-weight: 300;
             letter-spacing: 3px;
@@ -535,7 +529,29 @@
             text-shadow: 0 0 15px rgba(255,255,255,0.3);
             opacity: 0;
             transform: translateY(10px);
-            transition: all 2s ease;
+            transition: all 1.5s ease;
+        }
+        
+        .stayed-text.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stayed-text.fade-out {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .hehe-text {
+            position: absolute;
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,0.85);
+            text-shadow: 0 0 15px rgba(255,255,255,0.3);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 1.5s ease;
         }
 
         .hehe-text.show {
@@ -544,8 +560,6 @@
         }
 
         @media (max-width: 900px) {
-            body { overflow-y: auto; height: auto; }
-            .container { height: auto; padding-bottom: 20px; }
             .botanical-scene { flex-direction: column; align-items: center; margin-bottom: 0; }
             .canvas-area { width: 340px; height: 320px; margin-top: 20px; }
             .note { margin-bottom: 20px; width: 100%; max-width: 320px; text-align: center !important; border-left: none !important; border-right: none !important; border-bottom: 3px solid; }
@@ -608,14 +622,17 @@
     </div>
 
     <div class="finale-stage" id="finaleStage">
-        <div class="stayed-text" id="stayedText">you stayed</div>
         <div class="cake-box">
             <div class="candle">
                 <div class="candle-wick"></div>
                 <div class="flame"></div>
             </div>
         </div>
-        <div class="hehe-text" id="heheText">Hehe</div>
+        
+        <div class="text-slot-container">
+            <div class="stayed-text" id="stayedText">you stayed</div>
+            <div class="hehe-text" id="heheText">Hehe</div>
+        </div>
     </div>
 
     <script>
@@ -626,7 +643,7 @@
             "yepp happy birthday to the coolest person i know 😚",
             "hope the best for ya and may ya get whatever is best for ya",
             "and keeps ya happy and all",
-            "hehe now you can leave ig",
+            "hehe now you can leave ig or stay idk😁",
             "i'm really glad i got to know you. i really am..."
         ];
 
@@ -754,16 +771,24 @@
 
             document.body.style.background = '#000000';
 
-            // Cascading fade reveals: Stage -> "you stayed" -> "Hehe"
+            // FIX: Controlled timing loop for showing "you stayed", fading it, and bringing in "Hehe"
             setTimeout(() => {
                 document.getElementById('finaleStage').classList.add('active');
                 
                 setTimeout(() => {
-                    document.getElementById('stayedText').classList.add('show');
+                    // 1. Show "you stayed"
+                    const stayed = document.getElementById('stayedText');
+                    stayed.classList.add('show');
                     
                     setTimeout(() => {
-                        document.getElementById('heheText').classList.add('show');
-                    }, 2000); // 2 second split gap before the ultimate text prompt reveals
+                        // 2. Fade out "you stayed" after 2.5 seconds
+                        stayed.classList.add('fade-out');
+                        
+                        setTimeout(() => {
+                            // 3. Fade in "Hehe" right after the first text clears
+                            document.getElementById('heheText').classList.add('show');
+                        }, 1500); 
+                    }, 2500);
                 }, 1000);
             }, 3000);
         }
