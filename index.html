@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy Birthday Ms. Cool</title>
     <style>
+        /* FIX: Lock horizontal width globally to eliminate right side empty scrolling space */
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -18,7 +24,6 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            overflow: hidden;
             color: #ffffff;
             position: relative;
             transition: background 3s ease;
@@ -222,7 +227,6 @@
             animation: flyRightToLeftBird 16s linear forwards;
         }
 
-        /* FIX: Added fade out interpolation near 88%-100% boundary to eliminate edge stacking issues */
         @keyframes flyLeftToRightBird {
             0% { left: -60vw; opacity: 0; }
             5% { opacity: 1; }
@@ -430,7 +434,25 @@
             visibility: visible;
         }
 
-        /* Minimalist Interactive CSS Birthday Cake */
+        /* ADJUSTMENT: Added "you stayed" introductory text element */
+        .stayed-text {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            color: rgba(217, 249, 157, 0.9);
+            margin-bottom: 25px;
+            text-shadow: 0 0 15px rgba(163, 230, 53, 0.3);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 2s ease;
+        }
+        
+        .stayed-text.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Minimalist CSS Birthday Cake */
         .cake-box {
             position: relative;
             width: 200px;
@@ -438,10 +460,9 @@
             background: linear-gradient(to top, #3b2314, #5c3a21);
             border-radius: 12px 12px 4px 4px;
             box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8), inset 0 6px 0 rgba(255,255,255,0.1);
-            margin-bottom: 40px;
+            margin-bottom: 35px;
         }
         
-        /* Cream Layering */
         .cake-box::before {
             content: "";
             position: absolute;
@@ -453,7 +474,6 @@
             box-shadow: 0 35px 0 #fdf2f8;
         }
 
-        /* Top White Drip Frosting */
         .cake-box::after {
             content: "";
             position: absolute;
@@ -488,7 +508,6 @@
             background: #4b5563;
         }
 
-        /* Ambient Glowing Flame Engine */
         .flame {
             position: absolute;
             top: -24px;
@@ -516,7 +535,7 @@
             text-shadow: 0 0 15px rgba(255,255,255,0.3);
             opacity: 0;
             transform: translateY(10px);
-            transition: all 2s ease 2s;
+            transition: all 2s ease;
         }
 
         .hehe-text.show {
@@ -589,6 +608,7 @@
     </div>
 
     <div class="finale-stage" id="finaleStage">
+        <div class="stayed-text" id="stayedText">you stayed</div>
         <div class="cake-box">
             <div class="candle">
                 <div class="candle-wick"></div>
@@ -606,7 +626,7 @@
             "yepp happy birthday to the coolest person i know 😚",
             "hope the best for ya and may ya get whatever is best for ya",
             "and keeps ya happy and all",
-            "hehe now you can leave ig or stay idk😁",
+            "hehe now you can leave ig",
             "i'm really glad i got to know you. i really am..."
         ];
 
@@ -683,7 +703,7 @@
             setTimeout(() => leaf.remove(), duration * 1000);
         }
 
-        // 3. ALTERNATING DIRECTION BIRD ENGINE WITH FINALE HOOK
+        // 3. ALTERNATING DIRECTION BIRD ENGINE
         function triggerBirdSwarm() {
             const sky = document.getElementById('birdsSkyField');
             sky.innerHTML = ''; 
@@ -717,17 +737,14 @@
                 }, 7500 + (index * 17000));
             });
 
-            // FINALE TRIGGER MATH: 7500ms initial buffer + (7 lines * 17000ms delay) + 16000ms final bird flight duration = ~142.5 seconds
             const finalTimeoutDuration = 7500 + ((messageLines.length - 1) * 17000) + 16000;
             setTimeout(triggerBlackoutFinale, finalTimeoutDuration);
         }
 
         // FINALE STATE CONTROLLER
         function triggerBlackoutFinale() {
-            // Stop generating falling environmental leaves
             if(leafIntervalId) clearInterval(leafIntervalId);
 
-            // Fade out baseline UI nodes sequentially
             document.getElementById('mainTitle').style.opacity = '0';
             document.getElementById('botanicalGroup').style.opacity = '0';
             document.getElementById('leafContainer').style.opacity = '0';
@@ -735,15 +752,19 @@
             document.getElementById('skyArtBg').style.opacity = '0';
             document.getElementById('grassHillBg').style.opacity = '0';
 
-            // Transition body layer down into complete darkness
             document.body.style.background = '#000000';
 
-            // Light candle and present deep canvas layout
+            // Cascading fade reveals: Stage -> "you stayed" -> "Hehe"
             setTimeout(() => {
                 document.getElementById('finaleStage').classList.add('active');
+                
                 setTimeout(() => {
-                    document.getElementById('heheText').classList.add('show');
-                }, 1500);
+                    document.getElementById('stayedText').classList.add('show');
+                    
+                    setTimeout(() => {
+                        document.getElementById('heheText').classList.add('show');
+                    }, 2000); // 2 second split gap before the ultimate text prompt reveals
+                }, 1000);
             }, 3000);
         }
 
