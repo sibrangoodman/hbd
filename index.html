@@ -46,7 +46,7 @@
             pointer-events: none;
         }
 
-        /* JET & BANNER BASE HOLDERS */
+        /* ==================== JET FLIGHT STYLES ==================== */
         .jet-wrapper {
             position: absolute;
             display: flex;
@@ -62,7 +62,6 @@
             display: inline-block;
         }
 
-        /* GLOWING NEON BLUE BANNER AESTHETIC */
         .jet-banner {
             font-size: 1.1rem;
             font-weight: 600;
@@ -78,7 +77,6 @@
             position: relative;
         }
 
-        /* Universal tow lines */
         .jet-banner::before {
             content: "";
             position: absolute;
@@ -88,11 +86,10 @@
             background: rgba(34, 211, 238, 0.5);
         }
 
-        /* LEFT JET TRACK (Flying Left to Right) */
         .launch-left {
             opacity: 1;
-            top: 22vh;
-            animation: flyLeftToRight 18s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
+            top: 18vh;
+            animation: flyLeftToRightJet 16s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
         }
         .launch-left .jet-emoji {
             transform: rotate(12deg);
@@ -106,11 +103,10 @@
             right: -24px;
         }
 
-        /* RIGHT JET TRACK (Counter-balanced perfectly to remain right-side up) */
         .launch-right {
             opacity: 1;
-            top: 32vh;
-            animation: flyRightToLeft 18.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
+            top: 28vh;
+            animation: flyRightToLeftJet 16.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
         }
         .launch-right .jet-emoji {
             transform: rotate(-168deg);
@@ -124,20 +120,94 @@
             left: -24px;
         }
 
-        @keyframes flyLeftToRight {
-            0% { left: -280px; transform: scale(0.9); }
+        @keyframes flyLeftToRightJet {
+            0% { left: -50vw; transform: scale(0.9); }
             10% { opacity: 1; }
             90% { opacity: 1; }
-            100% { left: 120%; opacity: 0; transform: scale(0.7); }
+            100% { left: 130vw; opacity: 0; transform: scale(0.7); }
         }
 
-        @keyframes flyRightToLeft {
-            0% { right: -280px; transform: scale(0.9); }
+        @keyframes flyRightToLeftJet {
+            0% { right: -50vw; transform: scale(0.9); }
             10% { opacity: 1; }
             90% { opacity: 1; }
-            100% { right: 120%; opacity: 0; transform: scale(0.7); }
+            100% { right: 130vw; opacity: 0; transform: scale(0.7); }
         }
 
+
+        /* ==================== BIRD FLIGHT STYLES ==================== */
+        .bird-wrapper {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            z-index: 4;
+            user-select: none;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .bird-emoji {
+            font-size: 38px;
+            display: inline-block;
+            animation: gentleBob 1.8s ease-in-out infinite alternate;
+        }
+
+        .bird-banner {
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 1.2px;
+            color: #a7f3d0; 
+            background: rgba(16, 185, 129, 0.12);
+            padding: 6px 14px;
+            border: 2px dashed rgba(52, 211, 153, 0.5);
+            border-radius: 20px 4px 20px 4px;
+            white-space: nowrap;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.8), 0 0 15px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+            position: relative;
+        }
+
+        .bird-banner::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 1px;
+            background: rgba(52, 211, 153, 0.4);
+        }
+
+        .launch-bird {
+            opacity: 1;
+            top: 42vh;
+            animation: flyLeftToRightBird 20s cubic-bezier(0.25, 1, 0.45, 1) forwards;
+            animation-delay: 2s; /* Starts slightly after the jets pass */
+        }
+        .launch-bird .bird-emoji {
+            transform: scaleX(-1); /* Faces forward right */
+        }
+        .launch-bird .bird-banner {
+            order: -1;
+            margin-right: 20px;
+            transform: rotate(2deg);
+        }
+        .launch-bird .bird-banner::before {
+            right: -22px;
+        }
+
+        @keyframes flyLeftToRightBird {
+            0% { left: -50vw; transform: scale(0.85); opacity: 0; }
+            5% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { left: 130vw; opacity: 0; transform: scale(0.8); }
+        }
+
+        @keyframes gentleBob {
+            0% { transform: scaleX(-1) translateY(0px) rotate(-3deg); }
+            100% { transform: scaleX(-1) translateY(-8px) rotate(3deg); }
+        }
+
+
+        /* ==================== CORE ENGINE STYLES ==================== */
         .leaf-container {
             position: absolute;
             top: 0;
@@ -160,16 +230,10 @@
         }
 
         @keyframes fall {
-            0% {
-                transform: translateY(0) translateX(0) rotate(0deg);
-                opacity: 0;
-            }
+            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
             10% { opacity: 0.75; }
             90% { opacity: 0.75; }
-            100% {
-                transform: translateY(110vh) translateX(var(--drift-x)) rotate(var(--rotation));
-                opacity: 0;
-            }
+            100% { transform: translateY(110vh) translateX(var(--drift-x)) rotate(var(--rotation)); opacity: 0; }
         }
 
         .grass-hill {
@@ -305,6 +369,7 @@
             .right-note { order: 3; border-bottom-color: #a855f7; }
             .controls-area { height: auto; margin-top: 20px; }
             .grass-hill { height: 150px; bottom: -20px; }
+            .jet-wrapper, .bird-wrapper { scale: 0.85; }
         }
 
         @keyframes fadeIn {
@@ -322,6 +387,7 @@
     <svg class="constellation-overlay" id="starMap"></svg>
     <div class="leaf-container" id="leafContainer"></div>
     
+    <!-- JETS (Back in action!) -->
     <div id="jet-left" class="jet-wrapper">
         <div class="jet-emoji">✈️</div>
         <div class="jet-banner">Cap z</div>
@@ -330,6 +396,12 @@
     <div id="jet-right" class="jet-wrapper">
         <div class="jet-banner">Cap z</div>
         <div class="jet-emoji">✈️</div>
+    </div>
+
+    <!-- THE NEW RESPONSIVE BIRD -->
+    <div id="bird-glide" class="bird-wrapper">
+        <div class="bird-emoji">🕊️</div>
+        <div class="bird-banner">Sending you the sweetest birthday wishes! ✨❤️</div>
     </div>
 
     <div class="grass-hill"></div>
@@ -571,8 +643,12 @@
             if (!animationStarted) {
                 animationStarted = true;
                 
+                // Launch Jets
                 document.getElementById('jet-left').classList.add('launch-left');
                 document.getElementById('jet-right').classList.add('launch-right');
+                
+                // Launch Bird
+                document.getElementById('bird-glide').classList.add('launch-bird');
                 
                 setInterval(spawnLeaf, 380); 
                 drawBotanicalScene();
