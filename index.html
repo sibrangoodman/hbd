@@ -402,12 +402,12 @@
         const storyTimeline = [
             { time: 2.0, text: "happy birthday cap," },
             { time: 6.5, text: "17?" },
-            { time: 11.5, text: "again idk what to say  but yeaa ummm" },
-            { time: 18.5, text: "yepp happy birthday to the coolest person i know 😚" },
-            { time: 26.0, text: "hope the best for ya and may ya get whatever is best for ya" },
-            { time: 32.5, text: "and keeps ya happy and all" },
-            { time: 38.0, text: "hehe now you can leave ig or stay idk 😁" },
-            { time: 44.0, text: "i'm really glad i got to know you. i really am..." }
+            { time: 10.5, text: "again idk what to say  but yeaa ummm" }, // Comes in 1s earlier to catch the beat
+            { time: 15.5, text: "yepp happy birthday to the coolest person i know 😚" }, // Pulled forward by 3s to fix the delay
+            { time: 23.0, text: "hope the best for ya in life and may ya get whatever is best for ya" },
+            { time: 30.0, text: "and keeps ya happy and all" },
+            { time: 36.5, text: "hehe now you can leave ig or stay idk 😁" },
+            { time: 42.5, text: "btw i'm really glad i got to know you. i really am..." }
         ];
         // 1. CONSTELLATION GENERATOR
         const starMap = document.getElementById('starMap');
