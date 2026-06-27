@@ -54,6 +54,7 @@
             z-index: 3;
             user-select: none;
             pointer-events: none;
+            visibility: hidden; /* Fixes any startup flash glitch */
             opacity: 0;
         }
 
@@ -87,9 +88,10 @@
         }
 
         .launch-left {
+            visibility: visible !important;
             opacity: 1;
-            top: 18vh;
-            animation: flyLeftToRightJet 16s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
+            top: 15vh;
+            animation: flyLeftToRightJet 12s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
         }
         .launch-left .jet-emoji {
             transform: rotate(12deg);
@@ -104,9 +106,10 @@
         }
 
         .launch-right {
+            visibility: visible !important;
             opacity: 1;
-            top: 28vh;
-            animation: flyRightToLeftJet 16.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
+            top: 25vh;
+            animation: flyRightToLeftJet 12.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
         }
         .launch-right .jet-emoji {
             transform: rotate(-168deg);
@@ -135,7 +138,7 @@
         }
 
 
-        /* ==================== BIRD FLIGHT STYLES ==================== */
+        /* ==================== SEQUENTIAL BIRD STYLES ==================== */
         .bird-wrapper {
             position: absolute;
             display: flex;
@@ -143,26 +146,28 @@
             z-index: 4;
             user-select: none;
             pointer-events: none;
+            visibility: hidden; /* Absolute shield against initial load glitches */
             opacity: 0;
+            left: -100vw;
         }
 
         .bird-emoji {
-            font-size: 38px;
+            font-size: 35px;
             display: inline-block;
-            animation: gentleBob 1.8s ease-in-out infinite alternate;
+            animation: gentleBob 1.6s ease-in-out infinite alternate;
         }
 
         .bird-banner {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
-            letter-spacing: 1.2px;
+            letter-spacing: 1px;
             color: #a7f3d0; 
-            background: rgba(16, 185, 129, 0.12);
+            background: rgba(16, 185, 129, 0.14);
             padding: 6px 14px;
             border: 2px dashed rgba(52, 211, 153, 0.5);
             border-radius: 20px 4px 20px 4px;
             white-space: nowrap;
-            text-shadow: 0 0 10px rgba(16, 185, 129, 0.8), 0 0 15px rgba(16, 185, 129, 0.3);
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
             box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
             position: relative;
         }
@@ -176,34 +181,35 @@
             background: rgba(52, 211, 153, 0.4);
         }
 
-        .launch-bird {
-            opacity: 1;
-            top: 42vh;
-            animation: flyLeftToRightBird 20s cubic-bezier(0.25, 1, 0.45, 1) forwards;
-            animation-delay: 2s; /* Starts slightly after the jets pass */
+        /* Flight direction settings: birds come across seamlessly */
+        .launch-bird-active {
+            visibility: visible !important;
+            animation: flyAcrossScreen 16s linear forwards;
         }
-        .launch-bird .bird-emoji {
+        
+        .launch-bird-active .bird-emoji {
             transform: scaleX(-1); /* Faces forward right */
         }
-        .launch-bird .bird-banner {
+        
+        .launch-bird-active .bird-banner {
             order: -1;
             margin-right: 20px;
-            transform: rotate(2deg);
         }
-        .launch-bird .bird-banner::before {
+        
+        .launch-bird-active .bird-banner::before {
             right: -22px;
         }
 
-        @keyframes flyLeftToRightBird {
-            0% { left: -50vw; transform: scale(0.85); opacity: 0; }
+        @keyframes flyAcrossScreen {
+            0% { left: -60vw; opacity: 0; }
             5% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { left: 130vw; opacity: 0; transform: scale(0.8); }
+            95% { opacity: 1; }
+            100% { left: 120vw; opacity: 0; }
         }
 
         @keyframes gentleBob {
-            0% { transform: scaleX(-1) translateY(0px) rotate(-3deg); }
-            100% { transform: scaleX(-1) translateY(-8px) rotate(3deg); }
+            0% { transform: scaleX(-1) translateY(0px) rotate(-4deg); }
+            100% { transform: scaleX(-1) translateY(-6px) rotate(4deg); }
         }
 
 
@@ -369,7 +375,7 @@
             .right-note { order: 3; border-bottom-color: #a855f7; }
             .controls-area { height: auto; margin-top: 20px; }
             .grass-hill { height: 150px; bottom: -20px; }
-            .jet-wrapper, .bird-wrapper { scale: 0.85; }
+            .jet-wrapper { scale: 0.85; }
         }
 
         @keyframes fadeIn {
@@ -387,7 +393,6 @@
     <svg class="constellation-overlay" id="starMap"></svg>
     <div class="leaf-container" id="leafContainer"></div>
     
-    <!-- JETS (Back in action!) -->
     <div id="jet-left" class="jet-wrapper">
         <div class="jet-emoji">✈️</div>
         <div class="jet-banner">Cap z</div>
@@ -398,11 +403,7 @@
         <div class="jet-emoji">✈️</div>
     </div>
 
-    <!-- THE NEW RESPONSIVE BIRD -->
-    <div id="bird-glide" class="bird-wrapper">
-        <div class="bird-emoji">🕊️</div>
-        <div class="bird-banner">Sending you the sweetest birthday wishes! ✨❤️</div>
-    </div>
+    <div id="birdsSkyField" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4;"></div>
 
     <div class="grass-hill"></div>
 
@@ -429,6 +430,18 @@
     </div>
 
     <script>
+        // Your beautiful line-by-line bird scrolling array
+        const messageLines = [
+            "happy birthday cap,",
+            "17?",
+            "again idk what to say but yeaa ummm",
+            "yepp happy birthday to the coolest person i know 😚",
+            "hope the best for ya and may ya get whatever is best for ya",
+            "and keeps ya happy and all",
+            "hehe now you can leave ig",
+            "i'm really glad i got to know you. i really am..."
+        ];
+
         // 1. CONSTELLATION GENERATOR
         const starMap = document.getElementById('starMap');
         const letterGroups = [
@@ -501,7 +514,35 @@
             setTimeout(() => leaf.remove(), duration * 1000);
         }
 
-        // 3. BOTANICAL GARDEN CANVAS ENGINE
+        // 3. SEQUENTIAL BIRD DISPATCHER ENGINE
+        function triggerBirdSwarm() {
+            const sky = document.getElementById('birdsSkyField');
+            sky.innerHTML = ''; // Clean field
+            
+            // Generate distinct birds one by one with calculated cascading stagger delays
+            messageLines.forEach((text, index) => {
+                const birdWrapper = document.createElement('div');
+                birdWrapper.className = 'bird-wrapper';
+                
+                // Randomize heights a little bit so they look organic but clean (e.g., between 35% and 55% down the sky)
+                const verticalHeight = 35 + (index % 3) * 7;
+                birdWrapper.style.top = `${verticalHeight}vh`;
+                
+                birdWrapper.innerHTML = `
+                    <div class="bird-emoji">🕊️</div>
+                    <div class="bird-banner">${text}</div>
+                `;
+                
+                sky.appendChild(birdWrapper);
+                
+                // Pure clean execution: Wait 7 seconds for jets to completely vanish, then send birds spaced by 5.5s
+                setTimeout(() => {
+                    birdWrapper.classList.add('launch-bird-active');
+                }, 7000 + (index * 5500));
+            });
+        }
+
+        // 4. BOTANICAL GARDEN CANVAS ENGINE
         const canvas = document.getElementById('botanicalCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -634,7 +675,7 @@
             ctx.fill();
         }
 
-        // 4. RUNTIME CONTROLS
+        // 5. RUNTIME CONTROLS
         const track = document.getElementById('birthdayTrack');
 
         function toggleMusic() {
@@ -643,12 +684,12 @@
             if (!animationStarted) {
                 animationStarted = true;
                 
-                // Launch Jets
+                // Launch Jets cleanly
                 document.getElementById('jet-left').classList.add('launch-left');
                 document.getElementById('jet-right').classList.add('launch-right');
                 
-                // Launch Bird
-                document.getElementById('bird-glide').classList.add('launch-bird');
+                // Dispatch sequential scrolling birds
+                triggerBirdSwarm();
                 
                 setInterval(spawnLeaf, 380); 
                 drawBotanicalScene();
