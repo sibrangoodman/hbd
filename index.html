@@ -46,6 +46,37 @@
             pointer-events: none;
         }
 
+        /* FLOATING TEXT MESSAGES FROM BEHIND FLOWERS */
+        .flower-message {
+            position: absolute;
+            left: 50%;
+            bottom: 180px; /* Aligned near the center flower base cluster */
+            transform: translateX(-50%) translateY(20px);
+            font-size: 1.15rem;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            color: #f0f9ff;
+            background: rgba(11, 13, 26, 0.85);
+            backdrop-filter: blur(8px);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 12; /* Sits right in between background elements and foreground text boxes */
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            max-width: 90vw;
+            text-align: center;
+        }
+
+        .flower-message.reveal {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-60px); /* Floats smoothly upwards */
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
         /* JET & BANNER BASE HOLDERS */
         .jet-wrapper {
             position: absolute;
@@ -78,7 +109,6 @@
             position: relative;
         }
 
-        /* Universal tow lines */
         .jet-banner::before {
             content: "";
             position: absolute;
@@ -88,10 +118,10 @@
             background: rgba(34, 211, 238, 0.5);
         }
 
-        /* LEFT JET TRACK (Flying Left to Right) */
+        /* LEFT JET TRACK */
         .launch-left {
             opacity: 1;
-            top: 22vh;
+            top: 14vh;
             animation: flyLeftToRight 18s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
         }
         .launch-left .jet-emoji {
@@ -106,10 +136,10 @@
             right: -24px;
         }
 
-        /* RIGHT JET TRACK (Counter-balanced perfectly to remain right-side up) */
+        /* RIGHT JET TRACK */
         .launch-right {
             opacity: 1;
-            top: 32vh;
+            top: 36vh;
             animation: flyRightToLeft 18.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
         }
         .launch-right .jet-emoji {
@@ -237,6 +267,7 @@
             width: 100%;
             height: 100%;
             display: block;
+            z-index: 11; /* Kept intentionally over the rising text until it peaks */
         }
 
         .note {
@@ -300,6 +331,7 @@
             .container { height: auto; padding-bottom: 20px; }
             .botanical-scene { flex-direction: column; align-items: center; margin-bottom: 0; }
             .canvas-area { width: 340px; height: 320px; margin-top: 20px; }
+            .flower-message { bottom: 120px; font-size: 1rem; }
             .note { margin-bottom: 20px; width: 100%; max-width: 320px; text-align: center !important; border-left: none !important; border-right: none !important; border-bottom: 3px solid; }
             .left-note { order: 2; border-bottom-color: #ef4444; }
             .right-note { order: 3; border-bottom-color: #a855f7; }
@@ -314,6 +346,7 @@
 </head>
 <body>
 
+    <!-- HIGH-PERFORMANCE REPOSITORY LOCAL AUDIO SOURCE -->
     <audio id="birthdayTrack" loop preload="auto">
         <source src="song.mp3" type="audio/mpeg">
     </audio>
@@ -322,11 +355,18 @@
     <svg class="constellation-overlay" id="starMap"></svg>
     <div class="leaf-container" id="leafContainer"></div>
     
+    <!-- CANVAS ENVELOPE FOR ABSOLUTE POSITIONING OF MESSAGES -->
+    <div class="canvas-area" style="position: absolute; bottom: 12vh; left: 50%; transform: translateX(-50%); width: 480px; height: 440px; pointer-events: none; z-index: 15;">
+        <div id="flowerMsg" class="flower-message"></div>
+    </div>
+
+    <!-- LEFT JET -->
     <div id="jet-left" class="jet-wrapper">
         <div class="jet-emoji">✈️</div>
         <div class="jet-banner">Cap z</div>
     </div>
     
+    <!-- RIGHT JET -->
     <div id="jet-right" class="jet-wrapper">
         <div class="jet-banner">Cap z</div>
         <div class="jet-emoji">✈️</div>
@@ -342,6 +382,7 @@
                 haha now you olddd and happy birthday and all and blah blah idk what to say lol 🥳👵
             </div>
 
+            <!-- THE INTERACTIVE GROWING GARDEN FLOWER CANVAS -->
             <div class="canvas-area">
                 <canvas id="botanicalCanvas" width="480" height="440"></canvas>
             </div>
@@ -357,6 +398,17 @@
     </div>
 
     <script>
+        // CUSTOM MESSAGE TIMELINE (Fades and floats right out from the flowers sequentially)
+        const storyTimeline = [
+            { time: 2.0, text: "happy birthday cap," },
+            { time: 6.5, text: "buhhahah 17 huh?" },
+            { time: 11.5, text: "and im glad i got to know you i really am...." },
+            { time: 18.5, text: "yepp happy birthday to the coolest person i know 😚" },
+            { time: 26.0, text: "hope the best for ya and may ya get whatever is best for ya" },
+            { time: 32.5, text: "and keeps ya happy and all" },
+            { time: 38.0, text: "hehe now you can leave ig or stay idk 😁" }
+        ];
+
         // 1. CONSTELLATION GENERATOR
         const starMap = document.getElementById('starMap');
         const letterGroups = [
@@ -562,8 +614,34 @@
             ctx.fill();
         }
 
-        // 4. RUNTIME CONTROLS
+        // 4. RUNTIME TRACKING & FLOWER STORY MESSAGE SYSTEM
         const track = document.getElementById('birthdayTrack');
+        const flowerMsg = document.getElementById('flowerMsg');
+
+        track.addEventListener('timeupdate', () => {
+            const currentTime = track.currentTime;
+            let targetText = "";
+
+            // Evaluate custom timelines sequentially
+            for (let i = 0; i < storyTimeline.length; i++) {
+                if (currentTime >= storyTimeline[i].time) {
+                    targetText = storyTimeline[i].text;
+                }
+            }
+
+            if (flowerMsg.innerText !== targetText) {
+                if (targetText === "") {
+                    flowerMsg.classList.remove('reveal');
+                } else {
+                    // Smooth exit animation before loading new narrative line
+                    flowerMsg.classList.remove('reveal');
+                    setTimeout(() => {
+                        flowerMsg.innerText = targetText;
+                        flowerMsg.classList.add('reveal');
+                    }, 250);
+                }
+            }
+        });
 
         function toggleMusic() {
             const btn = document.querySelector('.music-btn');
