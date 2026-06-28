@@ -243,6 +243,67 @@
             100% { transform: scaleX(1) translateY(-6px) rotate(-4deg); }
         }
 
+        /* ==================== MID-WAY ROCKET LAUNCH ==================== */
+        .rocket-wrapper {
+            position: absolute;
+            bottom: 250px; /* Starts right from behind center flower position */
+            left: 50%;
+            transform: translateX(-50%) translateY(100vh);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 12; /* Behind title, but in front of flower layout background layers */
+            user-select: none;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .rocket-emoji {
+            font-size: 45px;
+            transform: rotate(-45deg); /* Point straight up */
+            filter: drop-shadow(0 0 12px #f97316);
+        }
+
+        .rocket-banner {
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: #ffb7d5;
+            background: rgba(219, 39, 119, 0.15);
+            padding: 8px 18px;
+            border: 2px dashed rgba(244, 114, 182, 0.6);
+            border-radius: 30px;
+            white-space: nowrap;
+            text-shadow: 0 0 10px rgba(244, 114, 182, 0.8);
+            box-shadow: 0 0 15px rgba(244, 114, 182, 0.2);
+            margin-top: 15px;
+            position: relative;
+        }
+
+        .rocket-banner::before {
+            content: "";
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 15px;
+            background: rgba(244, 114, 182, 0.5);
+        }
+
+        .launch-rocket {
+            opacity: 1;
+            animation: rocketAscent 9s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes rocketAscent {
+            0% { transform: translateX(-50%) translateY(30vh) scale(0.6); }
+            15% { transform: translateX(-50%) translateY(0vh) scale(1); }
+            85% { opacity: 1; }
+            100% { transform: translateX(-50%) translateY(-120vh) scale(0.8); opacity: 0; }
+        }
+
         /* ==================== LAYER WRAPPERS & CANVASES ==================== */
         #particleCanvas {
             position: absolute;
@@ -289,9 +350,9 @@
             opacity: 0;
             animation: fadeIn 2s ease-in forwards 0.5s;
             text-shadow: 0 2px 15px rgba(0, 0, 0, 0.7);
-            z-index: 110; /* Keeps heading layered completely above layout changes */
+            z-index: 110; 
             position: relative;
-            transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+            /* Explicitly removed transform transition property to remain perfectly static */
         }
 
         .highlight {
@@ -421,7 +482,7 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 2s ease;
-            padding-top: 80px; /* Gives room below the preserved title text */
+            padding-top: 80px; 
         }
 
         .finale-stage.active {
@@ -530,6 +591,7 @@
             .controls-area { height: auto; margin-top: 20px; }
             .grass-hill { height: 150px; bottom: -20px; }
             .jet-wrapper { scale: 0.85; }
+            .rocket-wrapper { bottom: 340px; }
         }
 
         @keyframes fadeIn {
@@ -556,6 +618,12 @@
     <div id="jet-right" class="jet-wrapper">
         <div class="jet-banner">Cap z</div>
         <div class="jet-emoji">✈️</div>
+    </div>
+
+    <!-- Surprise Rocket Element -->
+    <div id="surpriseRocket" class="rocket-wrapper">
+        <div class="rocket-emoji">🚀</div>
+        <div class="rocket-banner">ya stayed 😭</div>
     </div>
 
     <div id="birdsSkyField" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4;"></div>
@@ -652,7 +720,7 @@
         drawSkyElements();
         window.addEventListener('resize', drawSkyElements);
 
-        // 2. HIGH-PERFORMANCE CANVAS LEAF ENGINE (Prevents Layout Lag)
+        // 2. HIGH-PERFORMANCE CANVAS LEAF ENGINE
         const partCanvas = document.getElementById('particleCanvas');
         const pCtx = partCanvas.getContext('2d');
         let leaves = [];
@@ -709,7 +777,9 @@
             }
         }
 
-        // 3. OPTIMIZED SPREAD BIRD SWARM ENGINE (Locks final message into place later)
+        // 3. OPTIMIZED SPREAD BIRD SWARM ENGINE
+        let finalBirdLaunchTime = 0;
+
         function triggerBirdSwarm() {
             const sky = document.getElementById('birdsSkyField');
             sky.innerHTML = ''; 
@@ -729,10 +799,10 @@
                 
                 sky.appendChild(birdWrapper);
                 
-                // Dynamically calculates extended staggering. Pushes the last line further down the track timeline.
                 let individualDelay = 6500 + (index * 14000);
                 if (index === messageLines.length - 1) {
-                    individualDelay += 4000; // Gives the emotional final sentence an immersive window
+                    individualDelay += 4000; 
+                    finalBirdLaunchTime = individualDelay; // Saves exact final track launch timestamp
                 }
 
                 setTimeout(() => {
@@ -741,6 +811,13 @@
                     }
                 }, individualDelay);
             });
+
+            // 3b. Trigger the Rocket Launch 5 seconds after the last bird starts flying
+            setTimeout(() => {
+                if(!finaleExecuted) {
+                    document.getElementById('surpriseRocket').classList.add('launch-rocket');
+                }
+            }, finalBirdLaunchTime + 5000);
         }
 
         // 4. PRECISE AUDIO-SYNCED OUTRO REVEAL ENGINE
@@ -748,7 +825,6 @@
         const track = document.getElementById('birthdayTrack');
 
         track.addEventListener('timeupdate', () => {
-            // Evaluates when the last lines of the track are winding down (around 12-13 seconds out from strict finish)
             if (track.duration && (track.duration - track.currentTime <= 12.5)) {
                 if (!finaleExecuted) {
                     finaleExecuted = true;
@@ -773,13 +849,12 @@
             document.getElementById('skyArtBg').style.opacity = '0';
             document.getElementById('grassHillBg').style.opacity = '0';
             document.getElementById('birdsSkyField').style.opacity = '0';
+            document.getElementById('surpriseRocket').style.opacity = '0';
 
             // Step 2: Render background space completely pitch black
             document.body.style.background = '#000000';
 
-            // Adjust main title positioning slightly lower for cinematic look
-            const mainTitle = document.getElementById('mainTitle');
-            mainTitle.style.transform = 'translateY(15vh)';
+            // Notice: mainTitle transform statement completely removed to stay static at original position!
 
             // Step 3: Trigger white flash overlay seamlessly
             setTimeout(() => {
@@ -935,7 +1010,7 @@
             
             if (track.paused) {
                 track.play().catch(e => console.log("Audio target lock deferred:", e));
-                btn.innerText = "⏯ PAUSE";
+                btn.innerText = "⏸ PAUSE";
                 
                 if(!animationStarted) {
                     animationStarted = true;
