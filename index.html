@@ -21,7 +21,7 @@
             overflow: hidden;
             color: #ffffff;
             position: relative;
-            transition: background 3s ease;
+            transition: background 3.5s ease;
         }
 
         .sky-art {
@@ -171,6 +171,7 @@
             text-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
             box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
             position: relative;
+            transition: color 0.5s ease, text-shadow 0.5s ease, background 0.5s ease, border-color 0.5s ease;
         }
 
         .bird-banner::before {
@@ -222,18 +223,17 @@
             animation: flyRightToLeftBird 16s linear forwards;
         }
 
-        /* FIX: Added fade out interpolation near 88%-100% boundary to eliminate edge stacking issues */
         @keyframes flyLeftToRightBird {
             0% { left: -60vw; opacity: 0; }
             5% { opacity: 1; }
-            85% { opacity: 1; }
+            80% { opacity: 1; }
             100% { left: 110vw; opacity: 0; }
         }
 
         @keyframes flyRightToLeftBird {
             0% { right: -60vw; opacity: 0; }
             5% { opacity: 1; }
-            85% { opacity: 1; }
+            80% { opacity: 1; }
             100% { right: 110vw; opacity: 0; }
         }
 
@@ -303,6 +303,7 @@
             padding: 30px 20px 0 20px;
             z-index: 10;
             position: relative;
+            transition: opacity 2.5s ease;
         }
 
         h1 {
@@ -313,7 +314,6 @@
             animation: fadeIn 2s ease-in forwards 0.5s;
             text-shadow: 0 2px 15px rgba(0, 0, 0, 0.7);
             z-index: 10;
-            transition: opacity 2.5s ease;
         }
 
         .highlight {
@@ -330,7 +330,6 @@
             justify-content: space-between;
             margin-bottom: -15px; 
             z-index: 15;
-            transition: opacity 2.5s ease;
         }
 
         .canvas-area {
@@ -346,7 +345,6 @@
             width: 100%;
             height: 100%;
             display: block;
-            transition: opacity 2.5s ease;
         }
 
         .note {
@@ -361,7 +359,6 @@
             box-shadow: 0 12px 35px rgba(0,0,0,0.5);
             margin-bottom: 9vh; 
             border-radius: 14px;
-            transition: opacity 2.5s ease;
         }
 
         .left-note {
@@ -383,7 +380,6 @@
             justify-content: center;
             align-items: center;
             z-index: 50;
-            transition: opacity 2s ease;
         }
 
         .music-btn {
@@ -430,7 +426,6 @@
             visibility: visible;
         }
 
-        /* Minimalist Interactive CSS Birthday Cake */
         .cake-box {
             position: relative;
             width: 200px;
@@ -441,7 +436,6 @@
             margin-bottom: 40px;
         }
         
-        /* Cream Layering */
         .cake-box::before {
             content: "";
             position: absolute;
@@ -453,7 +447,6 @@
             box-shadow: 0 35px 0 #fdf2f8;
         }
 
-        /* Top White Drip Frosting */
         .cake-box::after {
             content: "";
             position: absolute;
@@ -488,7 +481,6 @@
             background: #4b5563;
         }
 
-        /* Ambient Glowing Flame Engine */
         .flame {
             position: absolute;
             top: -24px;
@@ -516,7 +508,7 @@
             text-shadow: 0 0 15px rgba(255,255,255,0.3);
             opacity: 0;
             transform: translateY(10px);
-            transition: all 2s ease 2s;
+            transition: all 2s ease;
         }
 
         .hehe-text.show {
@@ -688,63 +680,74 @@
             const sky = document.getElementById('birdsSkyField');
             sky.innerHTML = ''; 
             
+            const finalBirdThoughts = [
+                "wrapping this up 😭",
+                "come on message we gotta leave",
+                "she has already seen the thing!!😭",
+                "goingggggg"
+            ];
+
             messageLines.forEach((text, index) => {
                 const birdWrapper = document.createElement('div');
-                
                 const isFromLeft = index % 2 === 0;
                 birdWrapper.className = `bird-wrapper ${isFromLeft ? 'bird-from-left' : 'bird-from-right'}`;
                 
                 let verticalHeight = 35 + (index % 3) * 8;
-                if (text.length > 45) {
-                    verticalHeight = 31; 
-                }
                 birdWrapper.style.top = `${verticalHeight}vh`;
-                
-                let fontOverrideStyle = "";
-                if (text.length > 45) {
-                    fontOverrideStyle = "style='font-size: 0.82rem; padding: 5px 12px; max-width: 85vw; white-space: normal; line-height: 1.3;'";
-                }
                 
                 birdWrapper.innerHTML = `
                     <div class="bird-emoji">🕊️</div>
-                    <div ${fontOverrideStyle} class="bird-banner">${text}</div>
+                    <div class="bird-banner">${text}</div>
                 `;
                 
                 sky.appendChild(birdWrapper);
                 
+                // Launch standard message
                 setTimeout(() => {
                     birdWrapper.classList.add(isFromLeft ? 'launch-left-bird' : 'launch-right-bird');
                 }, 7500 + (index * 17000));
+
+                // Thought-stack monitor: Triggers custom panicking text updates right when it starts drifting away
+                if (index >= messageLines.length - 3) {
+                    setTimeout(() => {
+                        const banner = birdWrapper.querySelector('.bird-banner');
+                        if(banner) {
+                            banner.innerText = finalBirdThoughts[index % finalBirdThoughts.length];
+                            banner.style.color = '#f43f5e';
+                            banner.style.borderColor = 'rgba(244, 63, 94, 0.6)';
+                            banner.style.background = 'rgba(244, 63, 94, 0.15)';
+                            banner.style.textShadow = '0 0 10px rgba(244, 63, 94, 0.8)';
+                        }
+                    }, 7500 + (index * 17000) + 10500); // changes text midway during flight stack
+                }
             });
 
-            // FINALE TRIGGER MATH: 7500ms initial buffer + (7 lines * 17000ms delay) + 16000ms final bird flight duration = ~142.5 seconds
-            const finalTimeoutDuration = 7500 + ((messageLines.length - 1) * 17000) + 16000;
+            // FINALE TRIGGER TIME: Synced perfectly to allow final text flight to process fully
+            const finalTimeoutDuration = 7500 + ((messageLines.length - 1) * 17000) + 15500;
             setTimeout(triggerBlackoutFinale, finalTimeoutDuration);
         }
 
         // FINALE STATE CONTROLLER
         function triggerBlackoutFinale() {
-            // Stop generating falling environmental leaves
             if(leafIntervalId) clearInterval(leafIntervalId);
 
-            // Fade out baseline UI nodes sequentially
-            document.getElementById('mainTitle').style.opacity = '0';
-            document.getElementById('botanicalGroup').style.opacity = '0';
+            // Step 1: Swiftly completely hide old asset elements
+            document.getElementById('mainSceneContainer').style.opacity = '0';
             document.getElementById('leafContainer').style.opacity = '0';
             document.getElementById('starMap').style.opacity = '0';
             document.getElementById('skyArtBg').style.opacity = '0';
             document.getElementById('grassHillBg').style.opacity = '0';
 
-            // Transition body layer down into complete darkness
+            // Step 2: Establish midnight pure blackout space background
             document.body.style.background = '#000000';
 
-            // Light candle and present deep canvas layout
+            // Step 3: Deep delay layout injection - cake and text fade in with precision timing later
             setTimeout(() => {
                 document.getElementById('finaleStage').classList.add('active');
                 setTimeout(() => {
                     document.getElementById('heheText').classList.add('show');
-                }, 1500);
-            }, 3000);
+                }, 2500);
+            }, 3500); // 3.5 seconds absolute delay for a cleaner fade-in feel
         }
 
         // 4. BOTANICAL GARDEN CANVAS ENGINE
@@ -880,33 +883,29 @@
             ctx.fill();
         }
 
-        // 5. RUNTIME CONTROLS
-        const track = document.getElementById('birthdayTrack');
-
+        // GLOBAL MUSIC ACTION INTERACTION TRIGGER
         function toggleMusic() {
+            const track = document.getElementById('birthdayTrack');
             const btn = document.querySelector('.music-btn');
             
-            if (!animationStarted) {
-                animationStarted = true;
-                
-                document.getElementById('jet-left').classList.add('launch-left');
-                document.getElementById('jet-right').classList.add('launch-right');
-                
-                triggerBirdSwarm();
-                
-                leafIntervalId = setInterval(spawnLeaf, 380); 
-                drawBotanicalScene();
-            }
-
             if (track.paused) {
-                track.play().then(() => {
-                    btn.innerHTML = "⏸️ PAUSE";
-                }).catch(err => {
-                    btn.innerHTML = "⏸️ PAUSE";
-                });
+                track.play().catch(e => console.log("Playback context hold:", e));
+                btn.innerText = "🎵 PAUSE";
+                
+                if(!animationStarted) {
+                    animationStarted = true;
+                    // Trigger elements
+                    requestAnimationFrame(drawBotanicalScene);
+                    leafIntervalId = setInterval(spawnLeaf, 260);
+                    triggerBirdSwarm();
+                    
+                    // Fly Jet Banners
+                    setTimeout(() => document.getElementById('jet-left').classList.add('launch-left'), 1000);
+                    setTimeout(() => document.getElementById('jet-right').classList.add('launch-right'), 3200);
+                }
             } else {
                 track.pause();
-                btn.innerHTML = "🎵 PLAY";
+                btn.innerText = "🎵 PLAY";
             }
         }
     </script>
