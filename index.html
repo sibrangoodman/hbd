@@ -21,7 +21,7 @@
             overflow: hidden;
             color: #ffffff;
             position: relative;
-            transition: background 3.5s ease;
+            transition: background 3s ease;
         }
 
         .sky-art {
@@ -140,7 +140,6 @@
             100% { right: 130vw; opacity: 0; transform: scale(0.7); }
         }
 
-
         /* ==================== BIRD STYLES ==================== */
         .bird-wrapper {
             position: absolute;
@@ -198,7 +197,7 @@
         }
         .launch-left-bird {
             visibility: visible !important;
-            animation: flyLeftToRightBird 16s linear forwards;
+            animation: flyLeftToRightBird 15s linear forwards;
         }
 
         .bird-from-right {
@@ -217,7 +216,7 @@
         }
         .launch-right-bird {
             visibility: visible !important;
-            animation: flyRightToLeftBird 16s linear forwards;
+            animation: flyRightToLeftBird 15s linear forwards;
         }
 
         @keyframes flyLeftToRightBird {
@@ -244,9 +243,8 @@
             100% { transform: scaleX(1) translateY(-6px) rotate(-4deg); }
         }
 
-
-        /* ==================== CORE SCENE STYLES ==================== */
-        .leaf-container {
+        /* ==================== LAYER WRAPPERS & CANVASES ==================== */
+        #particleCanvas {
             position: absolute;
             top: 0;
             left: 0;
@@ -254,25 +252,7 @@
             height: 100vh;
             z-index: 5;
             pointer-events: none;
-            overflow: hidden;
             transition: opacity 2s ease;
-        }
-
-        .leaf {
-            position: absolute;
-            top: -5vh;
-            pointer-events: none;
-            user-select: none;
-            opacity: 0.8;
-            will-change: transform, opacity; 
-            animation: fall linear infinite;
-        }
-
-        @keyframes fall {
-            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.75; }
-            90% { opacity: 0.75; }
-            100% { transform: translateY(110vh) translateX(var(--drift-x)) rotate(var(--rotation)); opacity: 0; }
         }
 
         .grass-hill {
@@ -300,7 +280,6 @@
             padding: 30px 20px 0 20px;
             z-index: 10;
             position: relative;
-            transition: opacity 2s ease;
         }
 
         h1 {
@@ -310,7 +289,9 @@
             opacity: 0;
             animation: fadeIn 2s ease-in forwards 0.5s;
             text-shadow: 0 2px 15px rgba(0, 0, 0, 0.7);
-            z-index: 10;
+            z-index: 110; /* Keeps heading layered completely above layout changes */
+            position: relative;
+            transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .highlight {
@@ -327,6 +308,7 @@
             justify-content: space-between;
             margin-bottom: -15px; 
             z-index: 15;
+            transition: opacity 2s ease;
         }
 
         .canvas-area {
@@ -338,7 +320,7 @@
             align-items: flex-end;
         }
 
-        canvas {
+        #botanicalCanvas {
             width: 100%;
             height: 100%;
             display: block;
@@ -377,6 +359,7 @@
             justify-content: center;
             align-items: center;
             z-index: 50;
+            transition: opacity 1.5s ease;
         }
 
         .music-btn {
@@ -408,18 +391,18 @@
             width: 100%;
             height: 100%;
             background-color: #ffffff;
-            z-index: 90;
+            z-index: 105;
             pointer-events: none;
             opacity: 0;
         }
 
         .flash-trigger {
-            animation: explosiveFlash 1.4s ease-out forwards;
+            animation: explosiveFlash 1s ease-out forwards;
         }
 
         @keyframes explosiveFlash {
             0% { opacity: 0; }
-            15% { opacity: 1; }
+            20% { opacity: 1; }
             100% { opacity: 0; }
         }
 
@@ -438,6 +421,7 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 2s ease;
+            padding-top: 80px; /* Gives room below the preserved title text */
         }
 
         .finale-stage.active {
@@ -452,7 +436,7 @@
             background: linear-gradient(to top, #3b2314, #5c3a21);
             border-radius: 12px 12px 4px 4px;
             box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8), inset 0 6px 0 rgba(255,255,255,0.1);
-            margin-bottom: 40px;
+            margin-bottom: 35px;
         }
         
         .cake-box::before {
@@ -561,7 +545,7 @@
 
     <div class="sky-art" id="skyArtBg"></div>
     <svg class="constellation-overlay" id="starMap"></svg>
-    <div class="leaf-container" id="leafContainer"></div>
+    <canvas id="particleCanvas"></canvas>
     <div class="flash-overlay" id="flashOverlay"></div>
     
     <div id="jet-left" class="jet-wrapper">
@@ -578,7 +562,7 @@
 
     <div class="grass-hill" id="grassHillBg"></div>
 
-    <div class="container" id="mainSceneContainer">
+    <div class="container">
         <h1 id="mainTitle">Happy Birthday <span class="highlight">Ms. Cool</span> 😉❤️</h1>
 
         <div class="botanical-scene" id="botanicalGroup">
@@ -622,7 +606,7 @@
             "i'm really glad i got to know you. i really am..."
         ];
 
-        // 1. CONSTELLATION GENERATOR
+        // 1. STAR CONSTELLATION OVERLAY
         const starMap = document.getElementById('starMap');
         const letterGroups = [
             [[30,40], [42,40], [55,40], [30,100], [42,100], [55,100], [48,60], [38,80]],
@@ -668,34 +652,64 @@
         drawSkyElements();
         window.addEventListener('resize', drawSkyElements);
 
-        // 2. LEAF ENGINE
-        const leafContainer = document.getElementById('leafContainer');
-        const leafTypes = ['🍃', '🌸', '🍁', '🌱', '🌹', '🍂'];
-        let leafIntervalId = null;
-        
-        function spawnLeaf() {
-            if (document.hidden) return;
+        // 2. HIGH-PERFORMANCE CANVAS LEAF ENGINE (Prevents Layout Lag)
+        const partCanvas = document.getElementById('particleCanvas');
+        const pCtx = partCanvas.getContext('2d');
+        let leaves = [];
+        const leafEmojis = ['🍃', '🌸', '🍁', '🌱', '🌹', '🍂'];
 
-            const leaf = document.createElement('div');
-            leaf.className = 'leaf';
-            leaf.innerText = leafTypes[Math.floor(Math.random() * leafTypes.length)];
-            
-            leaf.style.left = Math.random() * 100 + 'vw';
-            leaf.style.fontSize = Math.random() * 10 + 14 + 'px';
-            
-            const driftX = (Math.random() * 240 - 120) + 'px';
-            const rotation = (Math.random() * 400 + 360) + 'deg';
-            leaf.style.setProperty('--drift-x', driftX);
-            leaf.style.setProperty('--rotation', rotation);
-            
-            const duration = Math.random() * 4 + 7; 
-            leaf.style.animationDuration = duration + 's';
-            
-            leafContainer.appendChild(leaf);
-            setTimeout(() => leaf.remove(), duration * 1000);
+        function resizeParticleCanvas() {
+            partCanvas.width = window.innerWidth;
+            partCanvas.height = window.innerHeight;
+        }
+        resizeParticleCanvas();
+        window.addEventListener('resize', resizeParticleCanvas);
+
+        function initLeafSystem() {
+            for(let i=0; i<30; i++) {
+                leaves.push({
+                    x: Math.random() * partCanvas.width,
+                    y: Math.random() * -partCanvas.height,
+                    size: Math.random() * 10 + 15,
+                    emoji: leafEmojis[Math.floor(Math.random() * leafEmojis.length)],
+                    speedY: Math.random() * 1.5 + 1.2,
+                    speedX: Math.random() * 1.0 - 0.5,
+                    angle: Math.random() * 360,
+                    spin: Math.random() * 1.2 - 0.6
+                });
+            }
         }
 
-        // 3. CLEAN STANDARD BIRD SWARM ENGINE
+        function updateAndRenderLeaves() {
+            pCtx.clearRect(0, 0, partCanvas.width, partCanvas.height);
+            pCtx.font = "20px Arial";
+            pCtx.textAlign = "center";
+            pCtx.textBaseline = "middle";
+
+            for(let i=0; i<leaves.length; i++) {
+                let l = leaves[i];
+                l.y += l.speedY;
+                l.x += l.speedX;
+                l.angle += l.spin;
+
+                if(l.y > partCanvas.height) {
+                    l.y = -20;
+                    l.x = Math.random() * partCanvas.width;
+                }
+
+                pCtx.save();
+                pCtx.translate(l.x, l.y);
+                pCtx.rotate(l.angle * Math.PI / 180);
+                pCtx.font = `${l.size}px Arial`;
+                pCtx.fillText(l.emoji, 0, 0);
+                pCtx.restore();
+            }
+            if(animationStarted && !finaleExecuted) {
+                requestAnimationFrame(updateAndRenderLeaves);
+            }
+        }
+
+        // 3. OPTIMIZED SPREAD BIRD SWARM ENGINE (Locks final message into place later)
         function triggerBirdSwarm() {
             const sky = document.getElementById('birdsSkyField');
             sky.innerHTML = ''; 
@@ -705,7 +719,7 @@
                 const isFromLeft = index % 2 === 0;
                 birdWrapper.className = `bird-wrapper ${isFromLeft ? 'bird-from-left' : 'bird-from-right'}`;
                 
-                let verticalHeight = 35 + (index % 3) * 8;
+                let verticalHeight = 32 + (index % 3) * 8;
                 birdWrapper.style.top = `${verticalHeight}vh`;
                 
                 birdWrapper.innerHTML = `
@@ -715,19 +729,27 @@
                 
                 sky.appendChild(birdWrapper);
                 
+                // Dynamically calculates extended staggering. Pushes the last line further down the track timeline.
+                let individualDelay = 6500 + (index * 14000);
+                if (index === messageLines.length - 1) {
+                    individualDelay += 4000; // Gives the emotional final sentence an immersive window
+                }
+
                 setTimeout(() => {
-                    birdWrapper.classList.add(isFromLeft ? 'launch-left-bird' : 'launch-right-bird');
-                }, 7000 + (index * 15500));
+                    if(!finaleExecuted) {
+                        birdWrapper.classList.add(isFromLeft ? 'launch-left-bird' : 'launch-right-bird');
+                    }
+                }, individualDelay);
             });
         }
 
-        // 4. REAL-TIME AUDIO TRACKER FOR AUTOMATED DROP FINALE
+        // 4. PRECISE AUDIO-SYNCED OUTRO REVEAL ENGINE
         let finaleExecuted = false;
         const track = document.getElementById('birthdayTrack');
 
         track.addEventListener('timeupdate', () => {
-            // Evaluates track length dynamically. If the song approaches its last 4-5 seconds (where the outro fades out), execute.
-            if (track.duration && (track.duration - track.currentTime <= 4.5)) {
+            // Evaluates when the last lines of the track are winding down (around 12-13 seconds out from strict finish)
+            if (track.duration && (track.duration - track.currentTime <= 12.5)) {
                 if (!finaleExecuted) {
                     finaleExecuted = true;
                     executeGrandFinaleDrop();
@@ -735,7 +757,6 @@
             }
         });
 
-        // Safe backup catch if metadata isn't ready: uses standard song end trigger hook
         track.addEventListener('ended', () => {
             if (!finaleExecuted) {
                 finaleExecuted = true;
@@ -744,32 +765,35 @@
         });
 
         function executeGrandFinaleDrop() {
-            if(leafIntervalId) clearInterval(leafIntervalId);
-
-            // Step 1: Hide old design layout parts immediately
-            document.getElementById('mainSceneContainer').style.opacity = '0';
-            document.getElementById('leafContainer').style.opacity = '0';
+            // Step 1: Smoothly fade away old interface layers
+            document.getElementById('botanicalGroup').style.opacity = '0';
+            document.getElementById('controlsGroup').style.opacity = '0';
+            document.getElementById('particleCanvas').style.opacity = '0';
             document.getElementById('starMap').style.opacity = '0';
             document.getElementById('skyArtBg').style.opacity = '0';
             document.getElementById('grassHillBg').style.opacity = '0';
             document.getElementById('birdsSkyField').style.opacity = '0';
 
-            // Step 2: Pitch black space
+            // Step 2: Render background space completely pitch black
             document.body.style.background = '#000000';
 
-            // Step 3: Flash of white light and immediate blackout reveal
+            // Adjust main title positioning slightly lower for cinematic look
+            const mainTitle = document.getElementById('mainTitle');
+            mainTitle.style.transform = 'translateY(15vh)';
+
+            // Step 3: Trigger white flash overlay seamlessly
             setTimeout(() => {
                 const flash = document.getElementById('flashOverlay');
                 flash.classList.add('flash-trigger');
 
-                // Step 4: Display Cake, Flame and Dynamic Message on base drop transition
+                // Step 4: Activating cake & candle reveal inside the pure shadow void
                 setTimeout(() => {
                     document.getElementById('finaleStage').classList.add('active');
                     setTimeout(() => {
                         document.getElementById('heheText').classList.add('show');
-                    }, 1200);
-                }, 250); 
-            }, 500);
+                    }, 1400);
+                }, 200); 
+            }, 600);
         }
 
         // 5. BOTANICAL GARDEN CANVAS ENGINE
@@ -905,18 +929,19 @@
             ctx.fill();
         }
 
-        // GLOBAL CLICK PLAY INTERACTION CONTROLLER
+        // MAIN CONTROL INTERACTIVE HOOK
         function toggleMusic() {
             const btn = document.querySelector('.music-btn');
             
             if (track.paused) {
-                track.play().catch(e => console.log("Audio playback delayed:", e));
-                btn.innerText = "⏸ PAUSE";
+                track.play().catch(e => console.log("Audio target lock deferred:", e));
+                btn.innerText = "⏯ PAUSE";
                 
                 if(!animationStarted) {
                     animationStarted = true;
+                    initLeafSystem();
                     requestAnimationFrame(drawBotanicalScene);
-                    leafIntervalId = setInterval(spawnLeaf, 260);
+                    requestAnimationFrame(updateAndRenderLeaves);
                     triggerBirdSwarm();
                     
                     // Fly Jets Banners
